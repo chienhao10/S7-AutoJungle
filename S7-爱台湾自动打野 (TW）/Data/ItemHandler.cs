@@ -26,9 +26,12 @@ namespace AutoJungle.Data
                 case BuildType.NOC:
                     SetListNOC();
                     break;
-                 case BuildType.EVE:
+                case BuildType.EVE:
                     SetListEVE();
                     break;
+                case BuildType.APADT:
+                	SetListAPT();
+                	break;
             }
         }
 
@@ -41,7 +44,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Sabre", 700));
             ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
             ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 1350));
-            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 300));
+            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
             ItemList.Add(new BuyingOrder(9, (int) ItemId.Tear_of_the_Goddess, "Tear of the Goddess", 750));
             ItemList.Add(new BuyingOrder(10, (int) ItemId.Boots_of_Swiftness, "Boots of Swoftness", 500));
             ItemList.Add(new BuyingOrder(11, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
@@ -68,7 +71,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Sabre", 700));
             ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
             ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 1350));
-            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 300));
+            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
             ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Swiftness, "Boots of Swoftness", 500));
             ItemList.Add(new BuyingOrder(10, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
             ItemList.Add(new BuyingOrder(11, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
@@ -90,7 +93,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Sabre", 700));
             ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
             ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 1350));
-            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 300));
+            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
             ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Swiftness, "Boots of Swoftness", 500));
             ItemList.Add(new BuyingOrder(10, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
             ItemList.Add(new BuyingOrder(11, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
@@ -105,17 +108,17 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(14, 2410, "Elixir of Wrath", 500));
         }
 
-        private void SetListEVE()
+        private void SetListAPADT()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
             ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
             ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
-            ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Sabre", 700));
-            ItemList.Add(new BuyingOrder(6, 1036, "Long Sword", 350));
-            ItemList.Add(new BuyingOrder(7, 1412, "Warrior", 1350));
-            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 300));
-            ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Swiftness, "Boots of Swoftness", 500));
+            ItemList.Add(new BuyingOrder(5, 3706, "Skirmisher's Sabre", 700));
+            ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
+            ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 750));
+            ItemList.Add(new BuyingOrder(9, 3111, "Mercurys Treads", 400));
             ItemList.Add(new BuyingOrder(10, 3052, "Jaurims Fist", 1300));
             ItemList.Add(new BuyingOrder(11, 3077, "Tiamat", 1300));
             ItemList.Add(new BuyingOrder(12, 3748, "Titanic Hydra", 1100));
@@ -128,6 +131,30 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
             ItemList.Add(new BuyingOrder(20, 2410, "Elixir of Wrath", 500));
 //add heal spell useage and keep buy Elixir of Wrath after full item
+        }
+
+        private void SetListEVE()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Skirmisher's Sabre", 700));
+            ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
+            ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 400));
+            ItemList.Add(new BuyingOrder(9, 3158, "Ionian Boots of Lucidity", 600));
+            ItemList.Add(new BuyingOrder(10, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
+            ItemList.Add(new BuyingOrder(11, 1058, "Needlessly Large Rod", 1250));
+            ItemList.Add(new BuyingOrder(12, 3116, "Rylais Crystal Scepter", 1000));
+            ItemList.Add(new BuyingOrder(13, 1058, "Needlessly Large Rod", 1250));
+            ItemList.Add(new BuyingOrder(14, 3113, "Aether Wisp", 875));
+            ItemList.Add(new BuyingOrder(15, 3285, "Ludens Echo", 1100));
+            ItemList.Add(new BuyingOrder(16, 1026, "Blasting Wand", 850));
+            ItemList.Add(new BuyingOrder(17, 3135, "Void Staf", 1800));
+            ItemList.Add(new BuyingOrder(18, 1058, "Needlessly Large Rod", 1250));
+            ItemList.Add(new BuyingOrder(19, 3089, "Rabadons Deathcap", 2500));
+            ItemList.Add(new BuyingOrder(20, 2139, "Elixir of Sorcery", 500));
         }
         public static void UseItemsJungle()
         {
@@ -215,6 +242,7 @@ namespace AutoJungle.Data
         AD,
         ASMANA,
         NOC,
-        EVE
+        EVE,
+        APADT
     }
 }
