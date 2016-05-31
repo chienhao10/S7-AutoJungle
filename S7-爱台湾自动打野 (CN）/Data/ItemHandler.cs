@@ -30,7 +30,7 @@ namespace AutoJungle.Data
                     SetListEVE();
                     break;
                 case BuildType.APADT:
-                	SetListAPT();
+                	SetListAPADT();
                 	break;
             }
         }
