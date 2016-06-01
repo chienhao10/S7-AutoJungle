@@ -114,7 +114,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
             ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
             ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
-            ItemList.Add(new BuyingOrder(5, 3706, "Skirmisher's Sabre", 700));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
             ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
             ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
             ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 750));
@@ -139,7 +139,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
             ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
             ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
-            ItemList.Add(new BuyingOrder(5, 3706, "Skirmisher's Sabre", 700));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
             ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
             ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
             ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 400));
