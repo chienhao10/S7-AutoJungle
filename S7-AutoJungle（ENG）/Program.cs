@@ -1348,6 +1348,7 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedXinZhao", "Xin Zhao"));
             menuChamps.AddItem(new MenuItem("supportedNocturne", "Nocturne"));
             menuChamps.AddItem(new MenuItem("supportedEvelyn", "Evelynn"));
+            menuChamps.AddItem(new MenuItem("supportedVolibear", "Volibear"));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);

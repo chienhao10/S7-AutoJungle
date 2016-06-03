@@ -164,11 +164,96 @@ namespace AutoJungle
                     Combo = EveCombo;
                     Console.WriteLine("Evelynn loaded");
                     break;
-                default:
+
+                    case "Volibear":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.NOC;
+
+                    Q = new Spell(SpellSlot.Q);
+                    W = new Spell(SpellSlot.W, 400);
+                    E = new Spell(SpellSlot.E, 425);
+                    R = new Spell(SpellSlot.R);
+
+                    Autolvl = new AutoLeveler(new int[] { 2, 1, 0, 1, 1, 3, 1, 0, 1, 0, 3, 0, 0, 2, 2, 3, 2, 2 });
+
+                    JungleClear = VbJungleClear;
+                    Combo = VoliCombo;
+                    Console.WriteLine("Volibear loaded");
+                    break;
+                	default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
-//nidale w buff?
+//nidale w buff?(优先）)nunu R check | sej，结束skr，amumu？ graves！
             }
+        }
+
+        private bool VoliCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            if (Q.IsReady() && targetHero.IsValidTarget(550))
+            {
+                Q.Cast();
+            }
+            if (E.IsReady() && targetHero.IsValidTarget(425))
+            {
+                E.Cast();
+            }
+            if (R.IsReady() && Hero.Distance(targetHero) < 400 && Hero.Mana > 100)
+            {
+                R.Cast();
+            }
+            if (W.IsReady() && targetHero.IsValidTarget(400))
+            {
+                W.CastOnUnit(targetHero);
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
+        }
+
+        private bool VbJungleClear()
+        {
+        	var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            ItemHandler.UseItemsJungle();
+            if (E.IsReady() && targetMob.IsValidTarget(425) && (Hero.ManaPercent > 60 || Hero.HealthPercent < 50))
+            {
+                E.Cast();
+            }
+            if (Q.IsReady() && targetMob.IsValidTarget(550))
+            {
+                Q.Cast();
+            }
+            if (W.IsReady() && targetMob.IsValidTarget(400))
+            {
+                W.CastOnUnit(targetMob);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
         }
 
         private bool EveCombo()

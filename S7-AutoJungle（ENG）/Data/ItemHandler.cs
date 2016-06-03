@@ -32,6 +32,9 @@ namespace AutoJungle.Data
                 case BuildType.APADT:
                 	SetListAPADT();
                 	break;
+                case BuildType.VB:
+                    SetlistVB();
+                    break;
             }
         }
 
@@ -156,6 +159,33 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(19, 3089, "Rabadons Deathcap", 2500));
             ItemList.Add(new BuyingOrder(20, 2139, "Elixir of Sorcery", 500));
         }
+
+        private void SetlistVB()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 1028, "Ruby Crystal", 400));
+            ItemList.Add(new BuyingOrder(7, 3751, "Bami's Cinder", 700));
+            ItemList.Add(new BuyingOrder(8, 1401, "Cinderhulk", 625));
+            ItemList.Add(new BuyingOrder(9, 1001, "Boots of Speed", 600));
+            ItemList.Add(new BuyingOrder(10, 1028, "Ruby Crystal", 400));
+            ItemList.Add(new BuyingOrder(11, 1011, "Giant's Belt", 600));
+            ItemList.Add(new BuyingOrder(12, 1031, "Chain Vest", 800));
+            ItemList.Add(new BuyingOrder(13, 3742, "Dead Man's Plate", 1800));
+            ItemList.Add(new BuyingOrder(14, 3009, "Boots of Swiftness", 600));
+            ItemList.Add(new BuyingOrder(15, 3211, "Spectres Cow", 1200));
+            ItemList.Add(new BuyingOrder(16, 3065, "Spirit Visage", 1600));
+            ItemList.Add(new BuyingOrder(17, 3052, "Jaurims Fist", 1300));
+            ItemList.Add(new BuyingOrder(18, 3077, "Tiamat", 1300));
+            ItemList.Add(new BuyingOrder(19, 3748, "Titanic Hydra", 1100));
+            ItemList.Add(new BuyingOrder(20, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
+            ItemList.Add(new BuyingOrder(21, 3143, "Randuin's Omen", 1900));
+            ItemList.Add(new BuyingOrder(22, 2138, "Elixir of Iron", 500));
+        }
+
         public static void UseItemsJungle()
         {
             if (Items.HasItem((int) ItemId.Tiamat_Melee_Only) && Items.CanUseItem((int) ItemId.Tiamat_Melee_Only) &&
@@ -243,6 +273,7 @@ namespace AutoJungle.Data
         ASMANA,
         NOC,
         EVE,
-        APADT
+        APADT,
+        VB
     }
 }
