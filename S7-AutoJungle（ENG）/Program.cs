@@ -330,7 +330,11 @@ namespace AutoJungle
             {
                 Items.UseItem(2031);
             }
-        }
+            if (Items.HasItem(2032) && Items.CanUseItem(2032) && player.HealthPercent < 80 &&
+                !player.Buffs.Any(b => b.Name.Equals("ItemCrystalFlask")))
+            {
+                Items.UseItem(2032);
+            }        }
 
         private static void MoveToPos()
         {
@@ -408,7 +412,11 @@ namespace AutoJungle
                     {
                         player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2031).Slot);
                     }
-                    var nextItem = orderedList.FirstOrDefault(i => i.Index == itemToBuy.Index + 1);
+                    player.BuyItem((ItemId) itemToBuy.ItemId);
+                    if (itemToBuy.Index > 9 && Items.HasItem(2032))
+                    {
+                        player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2032).Slot);
+                    }                    var nextItem = orderedList.FirstOrDefault(i => i.Index == itemToBuy.Index + 1);
                     if (nextItem != null)
                     {
                         _GameInfo.NextItemPrice = nextItem.Price;
@@ -1260,12 +1268,14 @@ namespace AutoJungle
             if (Game.MapId != GameMapId.SummonersRift)
             {
                 Game.PrintChat("The map is not supported!");
+                Game.PrintChat("Di Tu Bu Zhi Chi!");
                 return;
             }
             _GameInfo.Champdata = new Champdata();
             if (_GameInfo.Champdata.Hero == null)
             {
                 Game.PrintChat("The champion is not supported!");
+                Game.PrintChat("Bu Zhi Chi Ci Ying Xiong!");
                 return;
             }
             Jungle.setSmiteSlot();
@@ -1277,6 +1287,7 @@ namespace AutoJungle
                     Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }
                 Game.PrintChat("You don't have smite!");
+                Game.PrintChat("Ni mei you Cheng Jie/Zhong Ji!");
                 return;
             }
 
@@ -1349,6 +1360,7 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedNocturne", "Nocturne"));
             menuChamps.AddItem(new MenuItem("supportedEvelyn", "Evelynn"));
             menuChamps.AddItem(new MenuItem("supportedVolibear", "Volibear"));
+            menuChamps.AddItem(new MenuItem("supportedTryndamere", "Tryndamere"));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);

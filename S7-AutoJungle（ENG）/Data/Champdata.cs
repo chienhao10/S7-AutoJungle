@@ -167,7 +167,7 @@ namespace AutoJungle
 
                     case "Volibear":
                     Hero = ObjectManager.Player;
-                    Type = BuildType.NOC;
+                    Type = BuildType.VB;
 
                     Q = new Spell(SpellSlot.Q);
                     W = new Spell(SpellSlot.W, 400);
@@ -180,11 +180,93 @@ namespace AutoJungle
                     Combo = VoliCombo;
                     Console.WriteLine("Volibear loaded");
                     break;
+
+                    case "Tryndamere":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.Manwang;
+
+                    Q = new Spell(SpellSlot.Q);
+                    W = new Spell(SpellSlot.W, 850);
+                    E = new Spell(SpellSlot.E, 600);
+                    R = new Spell(SpellSlot.R);
+
+                    Autolvl = new AutoLeveler(new int[] { 0, 2, 0, 1, 0, 3, 0, 0, 2, 2, 3, 2, 2, 1, 1, 3, 1, 1 });
+
+                    JungleClear = MWJungleClear;
+                    Combo = MWCombo;
+                    Console.WriteLine("Tryndamere loaded");
+                    break;
                 	default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
 //nidale w buff?(优先）)nunu R check | sej，结束skr，amumu？ graves！
             }
+        }
+
+        private bool MWCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }       
+            if (E.IsReady() && targetHero.IsValidTarget(600))
+            {
+                E.Cast(targetHero);
+            }
+            ItemHandler.UseItemsCombo(targetHero, true);
+            if (W.IsReady() && targetHero.IsValidTarget(850))
+            {
+                W.Cast();
+            }
+			if (Q.IsReady() && !Hero.HasBuff("UndyingRage") && Hero.HealthPercent < 20)
+			{
+				Q.Cast();
+			}
+            if (R.IsReady() && Hero.HealthPercent < 15 && targetHero.CountEnemiesInRange(700) >= 1)
+            {
+                R.Cast();
+            }             
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
+        }
+
+        private bool MWJungleClear()
+        {
+        	var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            ItemHandler.UseItemsJungle();
+            if (E.IsReady() && targetMob.IsValidTarget(600))
+            {
+                E.Cast(targetMob);
+            }
+            if (Q.IsReady() && Hero.HealthPercent < 30)
+            {
+                Q.Cast();
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
         }
 
         private bool VoliCombo()
@@ -198,6 +280,7 @@ namespace AutoJungle
             {
                 Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
             }
+            ItemHandler.UseItemsCombo(targetHero, true);
             if (Hero.IsWindingUp)
             {
                 return false;
@@ -275,6 +358,7 @@ namespace AutoJungle
             {
                 Q.CastOnUnit(targetHero);
             }
+            ItemHandler.UseItemsCombo(targetHero, true);
             if (W.IsReady() && targetHero.IsValidTarget(750))
             {
                 W.Cast();
@@ -820,6 +904,7 @@ namespace AutoJungle
             {
                 R.CastOnUnit(targetHero);
             }
+            ItemHandler.UseItemsCombo(targetHero, true);
             if (Q.IsReady() && Q.CanCast(targetHero))
             {
                 Q.Cast(targetHero);

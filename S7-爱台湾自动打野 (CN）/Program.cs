@@ -1260,12 +1260,14 @@ namespace AutoJungle
             if (Game.MapId != GameMapId.SummonersRift)
             {
                 Game.PrintChat("The map is not supported!");
+                Game.PrintChat("Di Tu Bu Zhi Chi!");
                 return;
             }
             _GameInfo.Champdata = new Champdata();
             if (_GameInfo.Champdata.Hero == null)
             {
                 Game.PrintChat("The champion is not supported!");
+                Game.PrintChat("Bu Zhi Chi Ci Ying Xiong!");
                 return;
             }
             Jungle.setSmiteSlot();
@@ -1277,6 +1279,7 @@ namespace AutoJungle
                     Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }
                 Game.PrintChat("You don't have smite!");
+                Game.PrintChat("Ni mei you Cheng Jie/Zhong Ji!");
                 return;
             }
 
@@ -1348,6 +1351,8 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedXinZhao", "赵信"));
             menuChamps.AddItem(new MenuItem("supportedNocturne", "梦魇"));
             menuChamps.AddItem(new MenuItem("supportedEvelyn", "寡妇"));
+            menuChamps.AddItem(new MenuItem("supportedVolibear", "雷霆咆哮"));
+            menuChamps.AddItem(new MenuItem("supportedTryndamere", "蛮王"));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);

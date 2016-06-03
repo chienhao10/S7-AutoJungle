@@ -1260,12 +1260,14 @@ namespace AutoJungle
             if (Game.MapId != GameMapId.SummonersRift)
             {
                 Game.PrintChat("The map is not supported!");
+                Game.PrintChat("Di Tu Bu Zhi Chi!");
                 return;
             }
             _GameInfo.Champdata = new Champdata();
             if (_GameInfo.Champdata.Hero == null)
             {
                 Game.PrintChat("The champion is not supported!");
+                Game.PrintChat("Bu Zhi Chi Ci Ying Xiong!");
                 return;
             }
             Jungle.setSmiteSlot();
@@ -1277,6 +1279,7 @@ namespace AutoJungle
                     Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }
                 Game.PrintChat("You don't have smite!");
+                Game.PrintChat("Ni mei you Cheng Jie/Zhong Ji!");
                 return;
             }
 
@@ -1342,12 +1345,14 @@ namespace AutoJungle
             menu.AddItem(new MenuItem("AutoClose", "遊戲結束自動關閉")).SetValue(true);
             Menu menuChamps = new Menu("支持的英雄", "supported");
             menuChamps.AddItem(new MenuItem("supportedYi", "易大師"));
-            menuChamps.AddItem(new MenuItem("supportedWarwick", "狼人"));
-            menuChamps.AddItem(new MenuItem("supportedShyvana", "龍女"));
-            menuChamps.AddItem(new MenuItem("supportedJax", "武器大師"));
+            menuChamps.AddItem(new MenuItem("supportedWarwick", "沃維克"));
+            menuChamps.AddItem(new MenuItem("supportedShyvana", "半龍少女"));
+            menuChamps.AddItem(new MenuItem("supportedJax", "武器達人"));
             menuChamps.AddItem(new MenuItem("supportedXinZhao", "趙信"));
-            menuChamps.AddItem(new MenuItem("supportedNocturne", "夢魇"));
-            menuChamps.AddItem(new MenuItem("supportedEvelyn", "寡婦"));
+            menuChamps.AddItem(new MenuItem("supportedNocturne", "夜曲"));
+            menuChamps.AddItem(new MenuItem("supportedEvelyn", "伊芙琳"));
+            menuChamps.AddItem(new MenuItem("supportedVolibear", "弗力貝爾"));
+            menuChamps.AddItem(new MenuItem("supportedTryndamere", "蠻族之王"));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
