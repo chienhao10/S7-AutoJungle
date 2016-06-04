@@ -1,28 +1,28 @@
-# Ô­×÷Õß£ºSoresu
-Ô­×÷µØÖ·£ºhttps://github.com/Soresu/LeagueSharp
+# åŸä½œè€…ï¼šSoresu
+åŸä½œåœ°å€ï¼šhttps://github.com/Soresu/LeagueSharp
 
-#½Å±¾/What is this?
-Õâ¸ö½Å±¾×Ô¶¯Âò×°±¸£¬×Ô¶¯´òÒ°£¬×Ô¶¯ÍÆÏß£¬×Ô¶¯GANK£¬Ê¹ÓÃÎïÆ·£¬¿ÉÑ¡ÔñÊÇ·ñ½øÈëµĞ·½Ò°Çø¡£ÖÇÄÜÍÆÏß
+#è„šæœ¬/What is this?
+è¿™ä¸ªè„šæœ¬è‡ªåŠ¨ä¹°è£…å¤‡ï¼Œè‡ªåŠ¨æ‰“é‡ï¼Œè‡ªåŠ¨æ¨çº¿ï¼Œè‡ªåŠ¨GANKï¼Œä½¿ç”¨ç‰©å“ï¼Œå¯é€‰æ‹©æ˜¯å¦è¿›å…¥æ•Œæ–¹é‡åŒºã€‚æ™ºèƒ½æ¨çº¿
 Auto Jungle, is an auto play script first made by Soresu. Use for botting or afk
 
 #Supported champs:
-ÏÖÖ§³ÖµÄÓ¢ĞÛ/×°±¸Â·Ïß£º
+ç°æ”¯æŒçš„è‹±é›„/è£…å¤‡è·¯çº¿ï¼š
 
-Master YiÒ×´óÊ¦£¨ÍÆ¼öOP£©
-Warwick  ÀÇÈË £¨ÍÆ¼öOP£©
-ÁúÅ®
-ÎäÆ÷´óÊ¦
-ÕÔĞÅ
-Nocturne ÃÎ÷Ê £¨ÍÆ¼öOP£©
-Evelynn  ¹Ñ¸¾
+Master Yiæ˜“å¤§å¸ˆï¼ˆæ¨èOPï¼‰
+Warwick  ç‹¼äºº ï¼ˆæ¨èOPï¼‰
+é¾™å¥³
+æ­¦å™¨å¤§å¸ˆ
+èµµä¿¡
+Nocturne æ¢¦é­‡ å¤œæ›²ï¼ˆæ¨èOPï¼‰
+Evelynn  å¯¡å¦‡
 
-±ØĞë´ø³Í½ä!
-±Øíš§ÖØ“ô!
+å¿…é¡»å¸¦æƒ©æˆ’!
+å¿…é ˆå¸¶é‡æ“Š!
 Must have Smite!
 
-# Important£¡
-ÖØÒª£¡
+# Importantï¼
+é‡è¦ï¼
 
-L#ÊÕ·Ñ£¬´Ë½Å±¾Ãâ·Ñ£¡L# is a paid program, SCRIPT IS FREE
+L#æ”¶è´¹ï¼Œæ­¤è„šæœ¬å…è´¹ï¼L# is a paid program, SCRIPT IS FREE
 
 Some Local support/ Members FUCK OFF, STOP CHANGE NAME AND SELL TO NOOBS
