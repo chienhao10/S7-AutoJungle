@@ -64,8 +64,6 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(19, 3086, "叉子", 1300));
             ItemList.Add(new BuyingOrder(20, 3087, "电", 1000));
             ItemList.Add(new BuyingOrder(21, 2140, "嗑药", 500));
-
-
         }
         private void SetListASMANA()
         {

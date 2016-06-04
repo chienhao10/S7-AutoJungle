@@ -330,11 +330,7 @@ namespace AutoJungle
             {
                 Items.UseItem(2031);
             }
-            if (Items.HasItem(2032) && Items.CanUseItem(2032) && player.HealthPercent < 80 &&
-                !player.Buffs.Any(b => b.Name.Equals("ItemCrystalFlask")))
-            {
-                Items.UseItem(2032);
-            }        }
+        }
 
         private static void MoveToPos()
         {
@@ -412,11 +408,7 @@ namespace AutoJungle
                     {
                         player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2031).Slot);
                     }
-                    player.BuyItem((ItemId) itemToBuy.ItemId);
-                    if (itemToBuy.Index > 9 && Items.HasItem(2032))
-                    {
-                        player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2032).Slot);
-                    }                    var nextItem = orderedList.FirstOrDefault(i => i.Index == itemToBuy.Index + 1);
+                    var nextItem = orderedList.FirstOrDefault(i => i.Index == itemToBuy.Index + 1);
                     if (nextItem != null)
                     {
                         _GameInfo.NextItemPrice = nextItem.Price;
