@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("S7-AutoJungle")]
+[assembly: AssemblyTitle("S6-AutoJungle")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("LOVETAIWAN")]
-[assembly: AssemblyProduct("S7爱台湾自动打野")]
+[assembly: AssemblyCompany("S6-AutoJungle")]
+[assembly: AssemblyProduct("S6-AutoJungle")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

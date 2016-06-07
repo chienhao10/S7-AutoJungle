@@ -1322,7 +1322,7 @@ namespace AutoJungle
 
         private static void CreateMenu()
         {
-            menu = new Menu("S7-AutoJungle", "AutoJungle", true);
+            menu = new Menu("S6-AutoJungle", "AutoJungle", true);
 
             Menu menuD = new Menu("Debug ", "dsettings");
             menuD.AddItem(new MenuItem("debug", "Print to console"))
@@ -1357,7 +1357,7 @@ namespace AutoJungle
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
             menu.AddItem(
-            new MenuItem("AutoJungle", "Soresu | Updated by LOVETAIWAN v" + Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", "."))
+            new MenuItem("AutoJungle", "Soresu | Updated BY LOVETAIWAN v" + Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", "."))
             .SetFontStyle(FontStyle.Bold, SharpDX.Color.Red));
             menu.AddItem(
             new MenuItem("AutoJungle2", "F5 After Warrier/Bloodrazor,Bot will stop working!")
