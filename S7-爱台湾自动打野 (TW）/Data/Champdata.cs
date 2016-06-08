@@ -856,10 +856,6 @@ namespace AutoJungle
             {
                 Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
             }
-            if (Hero.IsWindingUp)
-            {
-                return false;
-            }
             if (E.IsReady() && Hero.IsWindingUp)
             {
                 E.Cast();
