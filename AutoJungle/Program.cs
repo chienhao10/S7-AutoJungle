@@ -5,10 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using AutoJungle.Data;
+using System.IO;
 using LeagueSharp;
+using System.Text;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
+using System.Globalization;
+using System.Resources;
 
 namespace AutoJungle
 {
@@ -27,6 +31,12 @@ namespace AutoJungle
         public static ItemHandler ItemHandler;
 
         public static Vector3 pos;
+
+        public static ResourceManager resourceM;
+        public static string culture;
+        public static String[] languages = new String[] { "English", "Chinese (Simplified)", "Chinese (Traditional)" };
+        public static String[] languagesShort = new String[] { "en", "cn", "tw" };
+        public static string fileName, path;
 
         #region Main
 
@@ -498,8 +508,11 @@ namespace AutoJungle
                     }
                     var mob =
                         Helpers.getMobs(player.Position, GameInfo.ChampionRange)
-                            .OrderBy(m => m.UnderTurret(true))
-                            .ThenByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
+                            .Where(
+                                m =>
+                                    (!m.UnderTurret(true) ||
+                                     (enemyTurret != null && Helpers.getAllyMobs(enemyTurret.Position, 1000).Count > 0)))
+                            .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
                             .ThenBy(m => m.Distance(player))
                             .FirstOrDefault();
                     if (mob != null)
@@ -588,7 +601,7 @@ namespace AutoJungle
                     {
                         continue;
                     }
-                    if (Helpers.AlliesThere(possibleTarget.Position) + 1 <
+                    if (Helpers.AlliesThere(possibleTarget.Position, 3000) + 1 <
                         possibleTarget.Position.CountEnemiesInRange(GameInfo.ChampionRange))
                     {
                         continue;
@@ -598,7 +611,7 @@ namespace AutoJungle
                         continue;
                     }
                     var ally =
-                        HeroManager.Allies.Where(a => !a.IsDead && a.Distance(possibleTarget) < 2000)
+                        HeroManager.Allies.Where(a => !a.IsDead && a.Distance(possibleTarget) < 3000)
                             .OrderBy(a => a.Distance(possibleTarget))
                             .FirstOrDefault();
                     var hp = possibleTarget.Health - myDmg * menu.Item("GankFrequency").GetValue<Slider>().Value / 100f;
@@ -668,8 +681,8 @@ namespace AutoJungle
                 {
                     if (
                         ObjectManager.Get<Obj_AI_Turret>()
-                            .FirstOrDefault(t => t.Distance(_GameInfo.MoveTo) < GameInfo.ChampionRange && t.IsAlly) !=
-                        null && (_GameInfo.GameState == State.Grouping || _GameInfo.GameState == State.Defending))
+                            .FirstOrDefault(t => t.Distance(_GameInfo.MoveTo) < 2000 && t.IsAlly) != null &&
+                        (_GameInfo.GameState == State.Grouping || _GameInfo.GameState == State.Defending))
                     {
                         tempstate = State.Defending;
                     }
@@ -725,7 +738,7 @@ namespace AutoJungle
         {
             return (Helpers.AlliesThere(pos) == 0 || Helpers.AlliesThere(pos) >= 2 ||
                     player.Distance(_GameInfo.SpawnPoint) < 6000 || player.Distance(_GameInfo.SpawnPointEnemy) < 6000 ||
-                    player.Level >= 14) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
+                    player.Level >= 10) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
                    Helpers.getMobs(pos, GameInfo.ChampionRange).Count +
                    _GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange) > 0 &&
                    !_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && _GameInfo.SmiteableMob == null &&
@@ -893,7 +906,7 @@ namespace AutoJungle
                 var objAiBase = minis.OrderBy(m => m.Distance(_GameInfo.SpawnPointEnemy)).FirstOrDefault();
                 if (objAiBase != null &&
                     (objAiBase.CountAlliesInRange(GameInfo.ChampionRange) == 0 ||
-                     objAiBase.CountAlliesInRange(GameInfo.ChampionRange) >= 2 || player.Level >= 14) &&
+                     objAiBase.CountAlliesInRange(GameInfo.ChampionRange) >= 2 || player.Level >= 10) &&
                     Helpers.getMobs(objAiBase.Position, 1000).Count == 0)
                 {
                     _GameInfo.MoveTo = objAiBase.Position.Extend(_GameInfo.SpawnPoint, 100);
@@ -1246,6 +1259,20 @@ namespace AutoJungle
             }
         }
 
+        private static void OnValueChanged(object sender, OnValueChangeEventArgs onValueChangeEventArgs)
+        {
+            try
+            {
+                var index = languages.ToList().IndexOf(onValueChangeEventArgs.GetNewValue<StringList>().SelectedValue);
+                File.WriteAllText(path + fileName, languagesShort[index], Encoding.Default);
+                Console.WriteLine("Changed to " + languagesShort[index]);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+
         #endregion
 
         #region Init
@@ -1257,17 +1284,16 @@ namespace AutoJungle
 
         private static void OnGameLoad(EventArgs args)
         {
+            SetCulture();
             if (Game.MapId != GameMapId.SummonersRift)
             {
-                Game.PrintChat("The map is not supported!");
-                Game.PrintChat("Di Tu Bu Zhi Chi!");
+                Game.PrintChat(resourceM.GetString("MapNotSupported"));
                 return;
             }
             _GameInfo.Champdata = new Champdata();
             if (_GameInfo.Champdata.Hero == null)
             {
-                Game.PrintChat("The champion is not supported!");
-                Game.PrintChat("Bu Zhi Chi Ci Ying Xiong!");
+                Game.PrintChat(resourceM.GetString("ChampNotSupported"));
                 return;
             }
             Jungle.setSmiteSlot();
@@ -1278,8 +1304,7 @@ namespace AutoJungle
                 {
                     Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }
-                Game.PrintChat("You don't have smite!");
-                Game.PrintChat("Ni mei you Cheng Jie/Zhong Ji!");
+                Game.PrintChat(resourceM.GetString("NoSmite"));
                 return;
             }
 
@@ -1292,6 +1317,37 @@ namespace AutoJungle
             Obj_AI_Base.OnNewPath += Obj_AI_Base_OnNewPath;
             Game.OnEnd += Game_OnEnd;
             Obj_AI_Base.OnDelete += Obj_AI_Base_OnDelete;
+        }
+
+        private static void SetCulture()
+        {
+            try
+            {
+                path = string.Format(@"{0}\AutoJ\", Config.AppDataDirectory);
+                fileName = "Lang.txt";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                if (!File.Exists(path + fileName))
+                {
+                    File.AppendAllText(path + fileName, "en", Encoding.Default);
+                    resourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
+                    Console.WriteLine("First start, lang is English");
+                }
+                else
+                {
+                    culture = File.ReadLines(path + fileName).First();
+                    Console.WriteLine(culture);
+                    resourceM = new ResourceManager("AutoJungle.Resource." + culture, typeof(Program).Assembly);
+                    Console.WriteLine("Lang set to " + culture);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                resourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
+            }
         }
 
         private static void Obj_AI_Base_OnDelete(GameObject sender, EventArgs args)
@@ -1322,48 +1378,63 @@ namespace AutoJungle
 
         private static void CreateMenu()
         {
-            menu = new Menu("愛台灣S7-自動打野", "AutoJungle", true);
+            menu = new Menu(resourceM.GetString("AutoJungle"), "AutoJungle", true);
 
-            Menu menuD = new Menu("調試 ", "dsettings");
-            menuD.AddItem(new MenuItem("debug", "控制台顯示調試信息"))
+            Menu menuD = new Menu(resourceM.GetString("dsettings"), "dsettings");
+            menuD.AddItem(new MenuItem("debug", resourceM.GetString("debug")))
                 .SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press))
                 .SetFontStyle(FontStyle.Bold, SharpDX.Color.Orange);
-            menuD.AddItem(new MenuItem("State", "顯示遊戲狀態")).SetValue(false);
+            menuD.AddItem(new MenuItem("State", resourceM.GetString("State"))).SetValue(false);
             menu.AddSubMenu(menuD);
-            Menu menuJ = new Menu("野區設置", "jsettings");
-            menuJ.AddItem(new MenuItem("HealtToBack", "回城血量(%)").SetValue(new Slider(35, 0, 100)));
-            menuJ.AddItem(new MenuItem("UseTrinket", "使用飾品")).SetValue(true);
-            menuJ.AddItem(new MenuItem("EnemyJungle", "入侵敵方野區")).SetValue(true);
+            Menu menuJ = new Menu(resourceM.GetString("jsettings"), "jsettings");
+            menuJ.AddItem(
+                new MenuItem("HealtToBack", resourceM.GetString("HealtToBack")).SetValue(new Slider(35, 0, 100)));
+            menuJ.AddItem(new MenuItem("UseTrinket", resourceM.GetString("UseTrinket"))).SetValue(true);
+            menuJ.AddItem(new MenuItem("EnemyJungle", resourceM.GetString("EnemyJungle"))).SetValue(true);
             menu.AddSubMenu(menuJ);
-            Menu menuG = new Menu("Gank設置", "gsettings");
-            menuG.AddItem(new MenuItem("GankLevel", "最低等級進行Gank").SetValue(new Slider(5, 1, 18)));
-            menuG.AddItem(new MenuItem("GankFrequency", "Gank次數").SetValue(new Slider(100, 0, 100)));
-            menuG.AddItem(new MenuItem("GankRange", "搜索範圍").SetValue(new Slider(7000, 0, 20000)));
-            menuG.AddItem(new MenuItem("ComboSmite", "使用重擊")).SetValue(true);
+            Menu menuG = new Menu(resourceM.GetString("dsettings"), "gsettings");
+            menuG.AddItem(new MenuItem("GankLevel", resourceM.GetString("GankLevel")).SetValue(new Slider(5, 1, 18)));
+            menuG.AddItem(
+                new MenuItem("GankFrequency", resourceM.GetString("GankFrequency")).SetValue(new Slider(100, 0, 100)));
+            menuG.AddItem(
+                new MenuItem("GankRange", resourceM.GetString("GankRange")).SetValue(new Slider(7000, 0, 20000)));
+            menuG.AddItem(new MenuItem("ComboSmite", resourceM.GetString("ComboSmite"))).SetValue(true);
             menu.AddSubMenu(menuG);
-            menu.AddItem(new MenuItem("Enabled", "開啓挂機")).SetValue(true);
-            menu.AddItem(new MenuItem("AutoClose", "遊戲結束自動關閉")).SetValue(true);
-            Menu menuChamps = new Menu("支持的英雄", "supported");
-            menuChamps.AddItem(new MenuItem("supportedYi", "易大師"));
-            menuChamps.AddItem(new MenuItem("supportedWarwick", "沃維克"));
-            menuChamps.AddItem(new MenuItem("supportedShyvana", "半龍少女"));
-            menuChamps.AddItem(new MenuItem("supportedJax", "武器達人"));
-            menuChamps.AddItem(new MenuItem("supportedXinZhao", "趙信"));
-            menuChamps.AddItem(new MenuItem("supportedNocturne", "夜曲"));
-            menuChamps.AddItem(new MenuItem("supportedEvelyn", "伊芙琳"));
-            menuChamps.AddItem(new MenuItem("supportedVolibear", "弗力貝爾"));
-            menuChamps.AddItem(new MenuItem("supportedTryndamere", "蠻族之王"));
+            menu.AddItem(new MenuItem("Enabled", resourceM.GetString("Enabled"))).SetValue(true);
+            menu.AddItem(new MenuItem("AutoClose", resourceM.GetString("AutoClose"))).SetValue(true);
+            Menu menuChamps = new Menu(resourceM.GetString("supported"), "supported");
+            menuChamps.AddItem(new MenuItem("supportedYi", resourceM.GetString("supportedYi")));
+            menuChamps.AddItem(new MenuItem("supportedWarwick", resourceM.GetString("supportedWarwick")));
+            menuChamps.AddItem(new MenuItem("supportedShyvana", resourceM.GetString("supportedShyvana")));
+            menuChamps.AddItem(new MenuItem("supportedJax", resourceM.GetString("supportedJax")));
+            menuChamps.AddItem(new MenuItem("supportedXinZhao", resourceM.GetString("supportedXinZhao")));
+            menuChamps.AddItem(new MenuItem("supportedNocturne", resourceM.GetString("supportedNocturne")));
+            menuChamps.AddItem(new MenuItem("supportedEvelyn", resourceM.GetString("supportedEvelyn")));
+            menuChamps.AddItem(new MenuItem("supportedVolibear", resourceM.GetString("supportedVolibear")));
+            menuChamps.AddItem(new MenuItem("supportedTryndamere", resourceM.GetString("supportedTryndamere")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
+
+            Menu menuLang = new Menu(resourceM.GetString("lsetting"), "lsetting");
+            menuLang.AddItem(
+                new MenuItem("Language", resourceM.GetString("Language")).SetValue(new StringList(languages, 0)));
+            menuLang.AddItem(
+                new MenuItem("AutoJungleInfoReload", resourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
+                    FontStyle.Bold, SharpDX.Color.Red));
+            menu.AddSubMenu(menuLang);
             menu.AddItem(
-            new MenuItem("AutoJungle", "Soresu原作 | LOVETAIWAN更新 v" + Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", "."))
-            .SetFontStyle(FontStyle.Bold, SharpDX.Color.Red));
-            menu.AddItem(
-            new MenuItem("AutoJungle2", "合成血手/戰士後F5，挂機則會無法使用!")
-            .SetFontStyle(FontStyle.Bold, SharpDX.Color.Purple));
+                new MenuItem(
+                    "AutoJungleInfo2",
+                    resourceM.GetString("AutoJungleInfo2") +
+                    Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", ".")).SetFontStyle(
+                        FontStyle.Bold, SharpDX.Color.Orange));
+            /*menu.AddItem(
+                new MenuItem("AutoJungleInfo3", resourceM.GetString("AutoJungleInfo3")).SetFontStyle(
+                    FontStyle.Bold, SharpDX.Color.Purple));*/
 
             menu.AddToMainMenu();
+            menu.Item("Language").ValueChanged += OnValueChanged;
         }
 
         #endregion

@@ -30,8 +30,8 @@ namespace AutoJungle.Data
                     SetListEVE();
                     break;
                 case BuildType.APADT:
-                	SetListAPADT();
-                	break;
+                    SetListAPADT();
+                    break;
                 case BuildType.VB:
                     SetlistVB();
                     break;
@@ -68,6 +68,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(20, 3087, "电", 1000));
             ItemList.Add(new BuyingOrder(21, 2140, "嗑药", 500));
         }
+
         private void SetListASMANA()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
@@ -163,7 +164,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
             ItemList.Add(new BuyingOrder(20, 2410, "Elixir of Wrath", 500));
-//add heal spell useage and keep buy Elixir of Wrath after full item
+            //add heal spell useage and keep buy Elixir of Wrath after full item
         }
 
         private void SetListEVE()
@@ -236,7 +237,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
             ItemList.Add(new BuyingOrder(20, 3742, "Dead Mans Plate", 2600));
             ItemList.Add(new BuyingOrder(21, 2410, "Elixir of Wrath", 500));
-            }
+        }
 
         public static void UseItemsJungle()
         {
