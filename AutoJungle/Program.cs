@@ -386,6 +386,12 @@ namespace AutoJungle
                 }
                 return false;
             }
+            if (ObjectManager.Player.HasBuff("ElixirOfWrath") ||
+                    ObjectManager.Player.HasBuff("ElixirOfIron") ||
+                     ObjectManager.Player.HasBuff("ElixirOfSorcery"))
+            {
+                return false;
+            }
             var current =
                 ItemHandler.ItemList.Where(i => Items.HasItem(i.ItemId))
                     .OrderByDescending(i => i.Index)
