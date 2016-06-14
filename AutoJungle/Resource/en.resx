@@ -127,7 +127,7 @@
     <value>Soresu | Updated by LOVETAIWAN </value>
   </data>
   <data name="HealthToPotion" xml:space="preserve">
-    <value>Health to potion</value>
+    <value>HP% to use potion</value>
   </data>
   <data name="AutoJungleInfoReload" xml:space="preserve">
     <value>You have to reload the assembly (F5)!</value>
