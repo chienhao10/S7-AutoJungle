@@ -79,20 +79,11 @@ namespace AutoJungle.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Soresu原作 | LOVETAIWAN更新 v.
+        ///   Looks up a localized string similar to Soresu原作 | LOVETAIWAN更新 .
         /// </summary>
         internal static string AutoJungleInfo2 {
             get {
                 return ResourceManager.GetString("AutoJungleInfo2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 合成血手/戰士後F5，挂機則會無法使用!.
-        /// </summary>
-        internal static string AutoJungleInfo3 {
-            get {
-                return ResourceManager.GetString("AutoJungleInfo3", resourceCulture);
             }
         }
         
@@ -192,6 +183,15 @@ namespace AutoJungle.Resource {
         internal static string gsettings {
             get {
                 return ResourceManager.GetString("gsettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 健康药水.
+        /// </summary>
+        internal static string HealthToPotion {
+            get {
+                return ResourceManager.GetString("HealthToPotion", resourceCulture);
             }
         }
         

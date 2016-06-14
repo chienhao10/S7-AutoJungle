@@ -4,14 +4,13 @@ using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
-using SharpDX.Direct3D9;
 
 namespace AutoJungle.Data
 {
     internal class Helpers
     {
-        public static List<Vector3> mod = new List<Vector3>();
-        public static List<Vector3> orig = new List<Vector3>();
+        public static List<Vector3> Mod = new List<Vector3>();
+        public static List<Vector3> Orig = new List<Vector3>();
         //public static List<Vector3> mod = new List<Vector3>();
 
         public static List<Geometry.Polygon> Lanes = new List<Geometry.Polygon>()
@@ -49,24 +48,24 @@ namespace AutoJungle.Data
                 .Extend(SummonersRift.River.Dragon_Pit.CenterOfPolygone().To3D(), -300),
         };
 
-        public static List<Obj_AI_Base> getMobs(Vector3 pos, float range)
+        public static List<Obj_AI_Base> GetMobs(Vector3 pos, float range)
         {
             return
                 MinionManager.GetMinions(pos, range, MinionTypes.All, MinionTeam.NotAlly)
                     .Where(
                         m =>
-                            m.IsValidTarget() && !Jungle.bosses.Any(n => m.Name.Contains(n)) && m.IsValidTarget() &&
+                            m.IsValidTarget() && !Jungle.Bosses.Any(n => m.Name.Contains(n)) && m.IsValidTarget() &&
                             !m.Name.Contains("barrel"))
-                    .OrderBy(m => m.Distance(Program.player))
+                    .OrderBy(m => m.Distance(Program.Player))
                     .Take(25)
                     .ToList();
         }
 
-        public static List<Obj_AI_Base> getAllyMobs(Vector3 pos, float range)
+        public static List<Obj_AI_Base> GetAllyMobs(Vector3 pos, float range)
         {
             return
                 MinionManager.GetMinions(pos, range, MinionTypes.All, MinionTeam.Ally)
-                    .OrderBy(m => m.Distance(Program.player))
+                    .OrderBy(m => m.Distance(Program.Player))
                     .Take(25)
                     .ToList();
         }
@@ -76,34 +75,35 @@ namespace AutoJungle.Data
             var list = vectors.ToList();
             for (var i = 0; i < list.Count; i++)
             {
-                if (i < list.Count - 1 && list[i].Distance(list[i + 1]) > 800)
+                if (i >= list.Count - 1 || !(list[i].Distance(list[i + 1]) > 800))
                 {
-                    if ((i > 1 && list[i - 1].Distance(list[i]) > 150) &&
-                        ((list[i].CountEnemiesInRange(GameInfo.ChampionRange) > 0 || !withoutChamps) &&
-                         (list[i].UnderTurret(true) || AvoidLane(list[i]))))
-                    {
-                        return false;
-                    }
-                    list.Insert(i + 1, list[i].Extend(list[i + 1], list[i].Distance(list[i + 1]) / 2));
-                    i--;
+                    continue;
                 }
+                if ((i > 1 && list[i - 1].Distance(list[i]) > 150) &&
+                    ((list[i].CountEnemiesInRange(GameInfo.ChampionRange) > 0 || !withoutChamps) &&
+                     (list[i].UnderTurret(true) || AvoidLane(list[i]))))
+                {
+                    return false;
+                }
+                list.Insert(i + 1, list[i].Extend(list[i + 1], list[i].Distance(list[i + 1]) / 2));
+                i--;
             }
-            mod = list;
+            Mod = list;
             return true;
         }
 
 
         private static bool AvoidLane(Vector3 point)
         {
-            if (Program._GameInfo.GameState != State.Positioning)
+            if (Program.GameInfo.GameState != State.Positioning)
             {
                 return false;
             }
             Lanes.Add(
-                Program.player.Team == GameObjectTeam.Chaos
+                Program.Player.Team == GameObjectTeam.Chaos
                     ? SummonersRift.MidLane.Blue_Zone
                     : SummonersRift.MidLane.Red_Zone);
-            return Lanes.Any(l => !l.IsInside(Program.player.Position) && l.IsInside(point));
+            return Lanes.Any(l => !l.IsInside(Program.Player.Position) && l.IsInside(point));
         }
 
         public static Obj_AI_Hero GetTargetEnemy()
@@ -114,10 +114,10 @@ namespace AutoJungle.Data
                         e.IsValidTarget() &&
                         (!e.UnderTurret(true) ||
                          (e.Health < e.GetAutoAttackDamage(e, true) * 2 &&
-                          e.Distance(Program.player) < Orbwalking.GetRealAutoAttackRange(e))) &&
-                        e.Distance(Program.player) < GameInfo.ChampionRange)
-                    .OrderByDescending(e => GetComboDMG(Program.player, e) > e.Health)
-                    .ThenByDescending(e => e.Distance(Program.player) < 500)
+                          e.Distance(Program.Player) < Orbwalking.GetRealAutoAttackRange(e))) &&
+                        e.Distance(Program.Player) < GameInfo.ChampionRange)
+                    .OrderByDescending(e => GetComboDmg(Program.Player, e) > e.Health)
+                    .ThenByDescending(e => e.Distance(Program.Player) < 500)
                     .ThenBy(e => e.Health)
                     .FirstOrDefault();
         }
@@ -135,12 +135,12 @@ namespace AutoJungle.Data
             return minions.FirstOrDefault();
         }
 
-        public static float GetComboDMG(Obj_AI_Hero source, Obj_AI_Hero target)
+        public static float GetComboDmg(Obj_AI_Hero source, Obj_AI_Hero target)
         {
             double result = 0;
             double basicDmg = 0;
-            int attacks = (int) Math.Floor(source.AttackSpeedMod * 5);
-            for (int i = 0; i < attacks; i++)
+            var attacks = (int) Math.Floor(source.AttackSpeedMod * 5);
+            for (var i = 0; i < attacks; i++)
             {
                 if (source.Crit > 0)
                 {
@@ -163,177 +163,177 @@ namespace AutoJungle.Data
                         case "Ahri":
                             if (spell.Slot == SpellSlot.Q)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot));
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot, 1));
+                                result += (source.GetSpellDamage(target, spell.Slot));
+                                result += (source.GetSpellDamage(target, spell.Slot, 1));
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Akali":
-                            if (spell.Slot == SpellSlot.R)
+                            switch (spell.Slot)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * spell.Ammo);
-                            }
-                            else if (spell.Slot == SpellSlot.Q)
-                            {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot));
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot, 1));
-                            }
-                            else
-                            {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                case SpellSlot.R:
+                                    result += (source.GetSpellDamage(target, spell.Slot) * spell.Ammo);
+                                    break;
+                                case SpellSlot.Q:
+                                    result += (source.GetSpellDamage(target, spell.Slot));
+                                    result += (source.GetSpellDamage(target, spell.Slot, 1));
+                                    break;
+                                default:
+                                    result += source.GetSpellDamage(target, spell.Slot);
+                                    break;
                             }
                             break;
                         case "Amumu":
                             if (spell.Slot == SpellSlot.W)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * 5);
+                                result += (source.GetSpellDamage(target, spell.Slot) * 5);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Cassiopeia":
                             if (spell.Slot == SpellSlot.Q || spell.Slot == SpellSlot.E || spell.Slot == SpellSlot.W)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * 2);
+                                result += (source.GetSpellDamage(target, spell.Slot) * 2);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Fiddlesticks":
                             if (spell.Slot == SpellSlot.W || spell.Slot == SpellSlot.E)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * 5);
+                                result += (source.GetSpellDamage(target, spell.Slot) * 5);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Garen":
                             if (spell.Slot == SpellSlot.E)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * 3);
+                                result += (source.GetSpellDamage(target, spell.Slot) * 3);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Irelia":
                             if (spell.Slot == SpellSlot.W)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * attacks);
+                                result += (source.GetSpellDamage(target, spell.Slot) * attacks);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Karthus":
                             if (spell.Slot == SpellSlot.Q)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * 4);
+                                result += (source.GetSpellDamage(target, spell.Slot) * 4);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "KogMaw":
                             if (spell.Slot == SpellSlot.W)
                             {
-                                result += (Damage.GetSpellDamage(source, target, spell.Slot) * attacks);
+                                result += (source.GetSpellDamage(target, spell.Slot) * attacks);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "LeeSin":
                             if (spell.Slot == SpellSlot.Q)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
-                                result += Damage.GetSpellDamage(source, target, spell.Slot, 1);
+                                result += source.GetSpellDamage(target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot, 1);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Lucian":
                             if (spell.Slot == SpellSlot.R)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot) * 4;
+                                result += source.GetSpellDamage(target, spell.Slot) * 4;
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Nunu":
                             if (spell.Slot != SpellSlot.R && spell.Slot != SpellSlot.Q)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "MasterYi":
-                            if (spell.Slot == SpellSlot.E)
+                            switch (spell.Slot)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot) * attacks;
-                            }
-                            else if (spell.Slot == SpellSlot.R)
-                            {
-                                result += basicDmg * 0.6f;
-                            }
-                            else
-                            {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                case SpellSlot.E:
+                                    result += source.GetSpellDamage(target, spell.Slot) * attacks;
+                                    break;
+                                case SpellSlot.R:
+                                    result += basicDmg * 0.6f;
+                                    break;
+                                default:
+                                    result += source.GetSpellDamage(target, spell.Slot);
+                                    break;
                             }
                             break;
                         case "MonkeyKing":
                             if (spell.Slot == SpellSlot.R)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot) * 4;
+                                result += source.GetSpellDamage(target, spell.Slot) * 4;
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Pantheon":
-                            if (spell.Slot == SpellSlot.E)
+                            switch (spell.Slot)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot) * 3;
-                            }
-                            else if (spell.Slot == SpellSlot.R)
-                            {
-                                result += 0;
-                            }
-                            else
-                            {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                case SpellSlot.E:
+                                    result += source.GetSpellDamage(target, spell.Slot) * 3;
+                                    break;
+                                case SpellSlot.R:
+                                    result += 0;
+                                    break;
+                                default:
+                                    result += source.GetSpellDamage(target, spell.Slot);
+                                    break;
                             }
 
                             break;
                         case "Rammus":
                             if (spell.Slot == SpellSlot.R)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot) * 6;
+                                result += source.GetSpellDamage(target, spell.Slot) * 6;
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Riven":
@@ -343,42 +343,42 @@ namespace AutoJungle.Data
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Shyvana":
                             if (spell.Slot == SpellSlot.W)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot) * 4;
+                                result += source.GetSpellDamage(target, spell.Slot) * 4;
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Viktor":
                             if (spell.Slot == SpellSlot.R)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
-                                result += Damage.GetSpellDamage(source, target, spell.Slot, 1) * 5;
+                                result += source.GetSpellDamage(target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot, 1) * 5;
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         case "Vladimir":
                             if (spell.Slot == SpellSlot.E)
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot) * 2;
+                                result += source.GetSpellDamage(target, spell.Slot) * 2;
                             }
                             else
                             {
-                                result += Damage.GetSpellDamage(source, target, spell.Slot);
+                                result += source.GetSpellDamage(target, spell.Slot);
                             }
                             break;
                         default:
-                            result += Damage.GetSpellDamage(source, target, spell.Slot);
+                            result += source.GetSpellDamage(target, spell.Slot);
                             break;
                     }
                 }
@@ -390,7 +390,7 @@ namespace AutoJungle.Data
             return (float) result;
         }
 
-        private static float RivenDamageQ(SpellDataInst spell, Obj_AI_Hero src, Obj_AI_Hero dsc)
+        private static float RivenDamageQ(SpellDataInst spell, Obj_AI_Base src, Obj_AI_Base dsc)
         {
             double dmg = 0;
             if (spell.IsReady())
@@ -409,27 +409,23 @@ namespace AutoJungle.Data
                 ObjectManager.Get<Obj_AI_Turret>()
                     .FirstOrDefault(
                         t =>
-                            t.IsValidTarget() && Program.player.Distance(t) < GameInfo.ChampionRange &&
-                            getAllyMobs(t.Position, 1000).Count > 1);
+                            t.IsValidTarget() && Program.Player.Distance(t) < GameInfo.ChampionRange &&
+                            GetAllyMobs(t.Position, 1000).Count > 1);
             if (turret != null)
             {
                 return turret;
             }
             var inhib =
                 ObjectManager.Get<Obj_BarracksDampener>()
-                    .FirstOrDefault(i => i.IsValidTarget() && Program.player.Distance(i) < 1100);
+                    .FirstOrDefault(i => i.IsValidTarget() && Program.Player.Distance(i) < 1100);
             if (inhib != null)
             {
                 return inhib;
             }
 
             var nexus =
-                ObjectManager.Get<Obj_HQ>().FirstOrDefault(n => n.IsValidTarget() && Program.player.Distance(n) < 1100);
-            if (nexus != null)
-            {
-                return nexus;
-            }
-            return null;
+                ObjectManager.Get<Obj_HQ>().FirstOrDefault(n => n.IsValidTarget() && Program.Player.Distance(n) < 1100);
+            return nexus;
         }
 
         internal static Vector3 GetClosestWard()
@@ -437,13 +433,13 @@ namespace AutoJungle.Data
             return
                 WardPos.Where(
                     w =>
-                        w.Distance(Program.player.Position) < 750 &&
+                        w.Distance(Program.Player.Position) < 750 &&
                         ObjectManager.Get<Obj_AI_Base>()
                             .FirstOrDefault(
                                 o =>
                                     o.Distance(w) < GameInfo.ChampionRange && o.Health > 0 &&
                                     o.Name.ToLower().Contains("ward") && !o.Name.ToLower().Contains("corpse")) == null)
-                    .OrderBy(w => w.Distance(Program.player.Position))
+                    .OrderBy(w => w.Distance(Program.Player.Position))
                     .FirstOrDefault();
         }
 
@@ -463,12 +459,12 @@ namespace AutoJungle.Data
         internal static float GetRealDistance(Obj_AI_Hero hero, Vector3 b)
         {
             var path = hero.GetPath(b);
-            var lastPoint = path[0];
+            Vector3[] lastPoint = { path[0] };
             var distance = 0f;
-            foreach (var point in path.Where(point => !point.Equals(lastPoint)))
+            foreach (var point in path.Where(point => !point.Equals(lastPoint[0])))
             {
-                distance += lastPoint.Distance(point);
-                lastPoint = point;
+                distance += lastPoint[0].Distance(point);
+                lastPoint[0] = point;
             }
             return distance;
         }
