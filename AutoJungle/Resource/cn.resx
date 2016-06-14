@@ -121,7 +121,7 @@
     <value>游戏结束自动关闭</value>
   </data>
   <data name="AutoJungle" xml:space="preserve">
-    <value>爱台湾S7-自动打野</value>
+    <value>爱台湾S6-自动打野</value>
   </data>
   <data name="ChampNotSupported" xml:space="preserve">
     <value>Bu Zhi Chi Ci Ying Xiong!</value>
@@ -205,7 +205,7 @@
     <value>Soresu原作 | LOVETAIWAN更新 </value>
   </data>
   <data name="HealthToPotion" xml:space="preserve">
-    <value>请自行调整药水使用</value>
+    <value>血量%使用药水</value>
   </data>
   <data name="AutoJungleInfoReload" xml:space="preserve">
     <value>You have to reload the assembly (F5)!</value>
