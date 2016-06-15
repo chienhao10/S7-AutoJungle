@@ -70,7 +70,7 @@ namespace AutoJungle.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 愛台灣S6-自動打野.
+        ///   Looks up a localized string similar to 愛台灣S7-自動打野.
         /// </summary>
         internal static string AutoJungle {
             get {
@@ -187,7 +187,7 @@ namespace AutoJungle.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 健康药水.
+        ///   Looks up a localized string similar to 血量%使用藥水.
         /// </summary>
         internal static string HealthToPotion {
             get {

@@ -187,7 +187,7 @@ namespace AutoJungle.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 健康药水.
+        ///   Looks up a localized string similar to 血量%使用药水.
         /// </summary>
         internal static string HealthToPotion {
             get {
