@@ -204,16 +204,16 @@
   <data name="AutoJungleInfo2" xml:space="preserve">
     <value>Soresu原作 | LOVETAIWAN更新 v</value>
   </data>
-  <data name="AutoJungleInfo3" xml:space="preserve">
-    <value>合成血手/戰士後F5，挂機則會無法使用!</value>
+  <data name="HealthToPotion" xml:space="preserve">
+    <value>血量%使用藥水</value>
   </data>
   <data name="AutoJungleInfoReload" xml:space="preserve">
-    <value>You have to reload the assembly (F5)!</value>
+    <value>你必須重新載入腳本 (F5)!</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>Language</value>
+    <value>語言</value>
   </data>
   <data name="lsetting" xml:space="preserve">
-    <value>Language</value>
+    <value>語言設置</value>
   </data>
 </root>

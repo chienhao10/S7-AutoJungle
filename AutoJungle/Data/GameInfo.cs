@@ -64,6 +64,7 @@ namespace AutoJungle
             {
                 CurrentMonster = 1;
             }
+            Console.WriteLine("AutoJungle Loaded");
         }
 
         public bool IsUnderAttack()
@@ -73,7 +74,8 @@ namespace AutoJungle
 
         public bool CanBuyItem()
         {
-            if (GameState != State.Positioning)
+            if (GameState != State.Positioning ||
+            (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || ObjectManager.Player.HasBuff("ElixirOfSorcery")))
             {
                 return false;
             }

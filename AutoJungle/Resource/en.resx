@@ -126,8 +126,8 @@
   <data name="AutoJungleInfo2" xml:space="preserve">
     <value>Soresu | Updated by LOVETAIWAN v</value>
   </data>
-  <data name="AutoJungleInfo3" xml:space="preserve">
-    <value>F5 After Warrier/Bloodrazor,Bot will stop working!</value>
+  <data name="HealthToPotion" xml:space="preserve">
+    <value>Use Potion on HP(%)</value>
   </data>
   <data name="AutoJungleInfoReload" xml:space="preserve">
     <value>You have to reload the assembly (F5)!</value>
