@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using LeagueSharp;
 using LeagueSharp.Common;
 
@@ -14,37 +12,37 @@ namespace AutoJungle.Data
         {
             switch (type)
             {
-                case BuildType.AD:
-                    SetListAD();
+                case BuildType.Ad:
+                    SetListAd();
                     break;
-                case BuildType.AS:
-                    SetListAS();
+                case BuildType.As:
+                    SetListAs();
                     break;
-                case BuildType.ASMANA:
-                    SetListASMANA();
+                case BuildType.Asmana:
+                    SetListAsmana();
                     break;
-                case BuildType.NOC:
-                    SetListNOC();
+                case BuildType.Noc:
+                    SetListNoc();
                     break;
-                case BuildType.EVE:
-                    SetListEVE();
+                case BuildType.Eve:
+                    SetListEve();
                     break;
-                case BuildType.APADT:
-                    SetListAPADT();
+                case BuildType.Apadt:
+                    SetListApadt();
                     break;
-                case BuildType.VB:
-                    SetlistVB();
+                case BuildType.Vb:
+                    SetlistVb();
                     break;
                 case BuildType.Manwang:
                     SetlistManwang();
                     break;
-                case BuildType.YI:
-                    SetlistYI();
+                case BuildType.Yi:
+                    SetlistYi();
                     break;
             }
         }
 
-        private void SetlistManwang()
+        private static void SetlistManwang()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "打野刀", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "药水", 150));
@@ -66,10 +64,10 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(18, 3124, "怒", 1750));
             ItemList.Add(new BuyingOrder(19, 3086, "叉子", 1300));
             ItemList.Add(new BuyingOrder(20, 3087, "电", 1000));
-            ItemList.Add(new BuyingOrder(21, 2140, "嗑药", 500));
+            ItemList.Add(new BuyingOrder(21, (int) ItemId.Elixir_of_Wrath, "嗑药", 500));
         }
 
-        private void SetListASMANA()
+        private static void SetListAsmana()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
@@ -91,12 +89,12 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Phantom_Dancer, "Phantom Dancer", 1500));
         }
 
-        private void SetListAD()
+        private static void SetListAd()
         {
             //ItemList.Add(new BuyingOrder());
         }
 
-        private void SetListAS()
+        private static void SetListAs()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
@@ -118,7 +116,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Phantom_Dancer, "Phantom Dancer", 1500));
         }
 
-        private void SetListNOC()
+        private static void SetListNoc()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
@@ -139,10 +137,10 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(17, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 1450));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Zeal, "Zeal", 1200));
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Phantom_Dancer, "Phantom Dancer", 1350));
-            ItemList.Add(new BuyingOrder(14, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(14, (int) ItemId.Elixir_of_Wrath, "Elixir of Wrath", 500));
         }
 
-        private void SetListAPADT()
+        private static void SetListApadt()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
@@ -163,11 +161,11 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(17, 3102, "Banshees Veil", 1250));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
-            ItemList.Add(new BuyingOrder(20, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(20, (int) ItemId.Elixir_of_Wrath, "Elixir of Wrath", 500));
             //add heal spell useage and keep buy Elixir of Wrath after full item
         }
 
-        private void SetListEVE()
+        private static void SetListEve()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
@@ -186,11 +184,11 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(15, 3135, "Void Staf", 1800));
             ItemList.Add(new BuyingOrder(16, 1058, "Needlessly Large Rod", 1250));
             ItemList.Add(new BuyingOrder(17, 3089, "Rabadons Deathcap", 2500));
-            ItemList.Add(new BuyingOrder(18, 2139, "Elixir of Sorcery", 500));
+            ItemList.Add(new BuyingOrder(18, (int) ItemId.Elixir_of_Sorcery, "Elixir of Sorcery", 500));
             //出装顺序不好，下次再改
         }
 
-        private void SetlistVB()
+        private static void SetlistVb()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "打野刀", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
@@ -211,10 +209,10 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(17, 3748, "Titanic Hydra", 1100));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
             ItemList.Add(new BuyingOrder(19, 3143, "Randuin's Omen", 1900));
-            ItemList.Add(new BuyingOrder(20, 2138, "Elixir of Iron", 500));
+            ItemList.Add(new BuyingOrder(20, (int) ItemId.Elixir_of_Iron, "Elixir of Iron", 500));
         }
 
-        private void SetlistYI()
+        private static void SetlistYi()
         {
             ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
@@ -231,29 +229,29 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(13, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 1450));
             ItemList.Add(new BuyingOrder(14, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
             ItemList.Add(new BuyingOrder(15, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
-            ItemList.Add(new BuyingOrder(16, 1037, "十字", 875));
+            ItemList.Add(new BuyingOrder(16, 1037, "Pickaxe", 875));
             ItemList.Add(new BuyingOrder(17, 3133, "warhamm", 1100));
             ItemList.Add(new BuyingOrder(18, 3812, "dance", 1525));
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
             ItemList.Add(new BuyingOrder(20, 3742, "Dead Mans Plate", 2600));
-            ItemList.Add(new BuyingOrder(21, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(21, (int) ItemId.Elixir_of_Wrath, "Elixir of Wrath", 500));
         }
 
         public static void UseItemsJungle()
         {
             if (Items.HasItem((int) ItemId.Tiamat_Melee_Only) && Items.CanUseItem((int) ItemId.Tiamat_Melee_Only) &&
-                Helpers.getMobs(Program.player.Position, 400).Count > 2)
+                Helpers.GetMobs(Program.Player.Position, 400).Count > 2)
             {
                 Items.UseItem((int) ItemId.Tiamat_Melee_Only);
             }
             if (Items.HasItem((int) ItemId.Ravenous_Hydra_Melee_Only) &&
                 Items.CanUseItem((int) ItemId.Ravenous_Hydra_Melee_Only) &&
-                Helpers.getMobs(Program.player.Position, 400).Count > 2)
+                Helpers.GetMobs(Program.Player.Position, 400).Count > 2)
             {
                 Items.UseItem((int) ItemId.Ravenous_Hydra_Melee_Only);
             }
             var muramana = LeagueSharp.Common.Data.ItemData.Muramana.GetItem().Id;
-            if (Items.HasItem(muramana) && Items.CanUseItem(muramana) && Program.player.HasBuff("Muramana"))
+            if (Items.HasItem(muramana) && Items.CanUseItem(muramana) && Program.Player.HasBuff("Muramana"))
             {
                 Items.UseItem(muramana);
             }
@@ -262,12 +260,12 @@ namespace AutoJungle.Data
         public static void UseItemsCombo(Obj_AI_Base target, bool use)
         {
             if (Items.HasItem((int) ItemId.Tiamat_Melee_Only) && Items.CanUseItem((int) ItemId.Tiamat_Melee_Only) &&
-                target.Distance(Program.player) < 400)
+                target.Distance(Program.Player) < 400)
             {
                 Items.UseItem((int) ItemId.Tiamat_Melee_Only);
             }
             if (Items.HasItem((int) ItemId.Ravenous_Hydra_Melee_Only) &&
-                Items.CanUseItem((int) ItemId.Ravenous_Hydra_Melee_Only) && target.Distance(Program.player) < 400)
+                Items.CanUseItem((int) ItemId.Ravenous_Hydra_Melee_Only) && target.Distance(Program.Player) < 400)
             {
                 Items.UseItem((int) ItemId.Ravenous_Hydra_Melee_Only);
             }
@@ -276,29 +274,30 @@ namespace AutoJungle.Data
                 return;
             }
             if (Items.HasItem((int) ItemId.Bilgewater_Cutlass) && Items.CanUseItem((int) ItemId.Bilgewater_Cutlass) &&
-                (target.Distance(Program.player) > Orbwalking.GetRealAutoAttackRange(target) ||
-                 (target.HealthPercent < 35 && Program.player.HealthPercent < 35)))
+                (target.Distance(Program.Player) > Orbwalking.GetRealAutoAttackRange(target) ||
+                 (target.HealthPercent < 35 && Program.Player.HealthPercent < 35)))
             {
                 Items.UseItem((int) ItemId.Bilgewater_Cutlass, target);
             }
             if (Items.HasItem((int) ItemId.Blade_of_the_Ruined_King) &&
                 Items.CanUseItem((int) ItemId.Blade_of_the_Ruined_King) &&
-                (target.Distance(Program.player) > Orbwalking.GetRealAutoAttackRange(target) ||
-                 (target.HealthPercent < 35 && Program.player.HealthPercent < 35)))
+                (target.Distance(Program.Player) > Orbwalking.GetRealAutoAttackRange(target) ||
+                 (target.HealthPercent < 35 && Program.Player.HealthPercent < 35)))
             {
                 Items.UseItem((int) ItemId.Blade_of_the_Ruined_King, target);
             }
             var muramana = LeagueSharp.Common.Data.ItemData.Muramana.GetItem().Id;
-            if (Items.HasItem(muramana) && Items.CanUseItem(muramana))
+            if (!Items.HasItem(muramana) || !Items.CanUseItem(muramana))
             {
-                if (!Program.player.HasBuff("Muramana") && Program.player.Mana > 250)
-                {
-                    Items.UseItem(muramana);
-                }
-                else if (Program.player.HasBuff("Muramana") && Program.player.Mana < 260)
-                {
-                    Items.UseItem(muramana);
-                }
+                return;
+            }
+            if (!Program.Player.HasBuff("Muramana") && Program.Player.Mana > 250)
+            {
+                Items.UseItem(muramana);
+            }
+            else if (Program.Player.HasBuff("Muramana") && Program.Player.Mana < 260)
+            {
+                Items.UseItem(muramana);
             }
         }
     }
@@ -312,23 +311,23 @@ namespace AutoJungle.Data
 
         public BuyingOrder(int idx, int itemid, string name, int price)
         {
-            Index = idx;
-            ItemId = itemid;
-            Name = name;
-            Price = price;
+            this.Index = idx;
+            this.ItemId = itemid;
+            this.Name = name;
+            this.Price = price;
         }
     }
 
     internal enum BuildType
     {
-        AS,
-        AD,
-        ASMANA,
-        NOC,
-        EVE,
-        APADT,
-        VB,
+        As,
+        Ad,
+        Asmana,
+        Noc,
+        Eve,
+        Apadt,
+        Vb,
         Manwang,
-        YI
+        Yi
     }
 }

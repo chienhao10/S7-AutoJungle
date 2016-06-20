@@ -202,18 +202,18 @@
     <value>使用饰品</value>
   </data>
   <data name="AutoJungleInfo2" xml:space="preserve">
-    <value>Soresu原作 | LOVETAIWAN更新 v</value>
+    <value>Soresu原作 | LOVETAIWAN更新 </value>
   </data>
   <data name="HealthToPotion" xml:space="preserve">
     <value>血量%使用药水</value>
   </data>
   <data name="AutoJungleInfoReload" xml:space="preserve">
-    <value>你必须重新载入脚本 (F5)!</value>
+    <value>You have to reload the assembly (F5)!</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>语言</value>
+    <value>Language</value>
   </data>
   <data name="lsetting" xml:space="preserve">
-    <value>语言设置</value>
+    <value>Language</value>
   </data>
 </root>
