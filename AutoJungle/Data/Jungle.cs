@@ -7,16 +7,16 @@ namespace AutoJungle.Data
 {
     public class Jungle
     {
-        public static Obj_AI_Hero Player = ObjectManager.Player;
+        public static Obj_AI_Hero player = ObjectManager.Player;
 
-        public static readonly string[] Bosses = { "TT_Spiderboss", "SRU_Dragon", "SRU_Baron", "SRU_RiftHerald" };
-        public static SpellSlot SmiteSlot = SpellSlot.Unknown;
-        public static Spell Smite;
-        public static int SmiteRange = 700;
+        public static readonly string[] bosses = { "TT_Spiderboss", "SRU_Dragon", "SRU_Baron", "SRU_RiftHerald" };
+        public static SpellSlot smiteSlot = SpellSlot.Unknown;
+        public static Spell smite;
+        public static int smiteRange = 700;
 
-        public static double SmiteDamage(Obj_AI_Base target)
+        public static double smiteDamage(Obj_AI_Base target)
         {
-            return Player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Smite);
+            return player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Smite);
         }
 
         public static void CastSmite(Obj_AI_Base target)
@@ -25,30 +25,27 @@ namespace AutoJungle.Data
             {
                 return;
             }
-            if (Program.GameInfo.CurrentMonster == 13 && !target.Name.Contains("Dragon"))
+            if (Program._GameInfo.CurrentMonster == 13 && !target.Name.Contains("Dragon"))
             {
                 return;
             }
-            if (SmiteSlot == SpellSlot.Unknown)
+            if (smiteSlot != SpellSlot.Unknown)
             {
-                return;
-            }
-            var smiteReady = ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready;
-            if (target == null)
-            {
-                return;
-            }
-            if (!Smite.CanCast(target) || !smiteReady || !(Player.Distance(target.Position) <= Smite.Range)
-                || !(target.Health < target.MaxHealth))
-            {
-                return;
-            }
-            if (SmiteDamage(target) > target.Health ||
-                (((target.Name.Contains("Krug") || target.Name.Contains("Gromp")) &&
-                  Player.CountEnemiesInRange(1000) == 0)) ||
-                (target.Name.Contains("SRU_Red") && Player.HealthPercent < 5))
-            {
-                Smite.Cast(target);
+                bool smiteReady = ObjectManager.Player.Spellbook.CanUseSpell(smiteSlot) == SpellState.Ready;
+                if (target != null)
+                {
+                    if (smite.CanCast(target) && smiteReady && player.Distance(target.Position) <= smite.Range &&
+                        target.Health < target.MaxHealth)
+                    {
+                        if (smiteDamage(target) > target.Health ||
+                            (((target.Name.Contains("Krug") || target.Name.Contains("Gromp")) &&
+                              player.CountEnemiesInRange(1000) == 0)) ||
+                            (target.Name.Contains("SRU_Red") && player.HealthPercent < 5))
+                        {
+                            smite.Cast(target);
+                        }
+                    }
+                }
             }
         }
 
@@ -58,43 +55,42 @@ namespace AutoJungle.Data
             {
                 return;
             }
-            if (Program.GameInfo.CurrentMonster == 13 && !target.Name.Contains("Dragon"))
+            if (Program._GameInfo.CurrentMonster == 13 && !target.Name.Contains("Dragon"))
             {
                 return;
             }
-            if (SmiteSlot == SpellSlot.Unknown)
+            if (smiteSlot != SpellSlot.Unknown)
             {
-                return;
-            }
-            var smiteReady = ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready;
-            if (target == null)
-            {
-                return;
-            }
-            if (Smite.CanCast(target) && smiteReady && Player.Distance(target.Position) <= Smite.Range &&
-                target.Health > Helpers.GetComboDmg(Player, target) * 0.7f &&
-                Player.Distance(target) < Orbwalking.GetRealAutoAttackRange(target) &&
-                Program.GameInfo.SmiteableMob == null)
-            {
-                Smite.Cast(target);
+                bool smiteReady = ObjectManager.Player.Spellbook.CanUseSpell(smiteSlot) == SpellState.Ready;
+                if (target != null)
+                {
+                    if (smite.CanCast(target) && smiteReady && player.Distance(target.Position) <= smite.Range &&
+                        target.Health > Helpers.GetComboDMG(player, target) * 0.7f &&
+                        player.Distance(target) < Orbwalking.GetRealAutoAttackRange(target) &&
+                        Program._GameInfo.SmiteableMob == null)
+                    {
+                        smite.Cast(target);
+                    }
+                }
             }
         }
 
         public static bool SmiteReady()
         {
-            if (SmiteSlot != SpellSlot.Unknown)
+            if (smiteSlot != SpellSlot.Unknown)
             {
-                return ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready;
+                return ObjectManager.Player.Spellbook.CanUseSpell(smiteSlot) == SpellState.Ready;
             }
             return false;
         }
 
-        //BIO
-        private static readonly int[] SmiteGreen = { 3711, 1408, 1409, 1410, 1418 };
-        private static readonly int[] SmiteRed = { 3715, 1412, 1413, 1414, 1419 };
-        private static readonly int[] SmiteBlue = { 3706, 1400, 1401, 1402, 1416 };
+        //Kurisu
+        private static readonly int[] SmitePurple = { 3713, 3726, 3725, 3724, 3723, 3933 };
+        private static readonly int[] SmiteGrey = { 3711, 3722, 3721, 3720, 3719, 3932 };
+        private static readonly int[] SmiteRed = { 3715, 3718, 3717, 3716, 3714, 3931, 1415, 1419, 1401 };
+        private static readonly int[] SmiteBlue = { 3706, 3710, 3709, 3708, 3707, 3930 };
 
-        public static string Smitetype()
+        public static string smitetype()
         {
             if (SmiteBlue.Any(id => Items.HasItem(id)))
             {
@@ -104,17 +100,25 @@ namespace AutoJungle.Data
             {
                 return "s5_summonersmiteduel";
             }
-            return SmiteGreen.Any(id => Items.HasItem(id)) ? "summonersmite" : "summonersmite";
+            if (SmiteGrey.Any(id => Items.HasItem(id)))
+            {
+                return "s5_summonersmitequick";
+            }
+            if (SmitePurple.Any(id => Items.HasItem(id)))
+            {
+                return "itemsmiteaoe";
+            }
+            return "summonersmite";
         }
 
-        public static void SetSmiteSlot()
+        public static void setSmiteSlot()
         {
             foreach (var spell in
                 ObjectManager.Player.Spellbook.Spells.Where(
-                    spell => String.Equals(spell.Name, Smitetype(), StringComparison.CurrentCultureIgnoreCase)))
+                    spell => String.Equals(spell.Name, smitetype(), StringComparison.CurrentCultureIgnoreCase)))
             {
-                SmiteSlot = spell.Slot;
-                Smite = new Spell(SmiteSlot, SmiteRange);
+                smiteSlot = spell.Slot;
+                smite = new Spell(smiteSlot, smiteRange);
                 return;
             }
         }

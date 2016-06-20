@@ -11,39 +11,40 @@ using System.Text;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
+using System.Globalization;
 using System.Resources;
 
 namespace AutoJungle
 {
     internal class Program
     {
-        public static GameInfo GameInfo = new GameInfo();
+        public static GameInfo _GameInfo = null;
 
-        public static Menu Menu;
+        public static Menu menu;
 
         public static float UpdateLimiter, ResetTimer, GameStateChanging;
 
-        public static readonly Obj_AI_Hero Player = ObjectManager.Player;
+        public static Obj_AI_Hero player;
 
         public static Random Random = new Random(Environment.TickCount);
 
         public static ItemHandler ItemHandler;
 
-        public static Vector3 Pos;
+        public static Vector3 pos;
 
-        public static ResourceManager ResourceM;
-        public static string Culture;
-        public static String[] Languages = new String[] { "English", "Chinese (Simplified)", "Chinese (Traditional)" };
-        public static String[] LanguagesShort = new String[] { "en", "cn", "tw" };
-        public static string FileName, Path;
+        public static ResourceManager resourceM;
+        public static string culture;
+        public static String[] languages = new String[] { "English", "Chinese (Simplified)", "Chinese (Traditional)" };
+        public static String[] languagesShort = new String[] { "en", "cn", "tw" };
+        public static string fileName, path;
 
         #region Main
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            if (GameInfo.SmiteableMob != null)
+            if (_GameInfo.SmiteableMob != null)
             {
-                Jungle.CastSmite(GameInfo.SmiteableMob);
+                Jungle.CastSmite(_GameInfo.SmiteableMob);
             }
             CastHighPrioritySpells();
             if (ShouldSkipUpdate())
@@ -51,7 +52,7 @@ namespace AutoJungle
                 return;
             }
             SetGameInfo();
-            if (GameInfo.WaitOnFountain)
+            if (_GameInfo.WaitOnFountain)
             {
                 return;
             }
@@ -75,7 +76,7 @@ namespace AutoJungle
                 {
                     Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }*/
-                GameInfo.Show();
+                _GameInfo.Show();
                 /*
                 foreach (var v in _GameInfo.MonsterList)
                 {
@@ -94,7 +95,7 @@ namespace AutoJungle
             {
                 return;
             }
-            if (Menu.Item("UseTrinket").GetValue<bool>())
+            if (menu.Item("UseTrinket").GetValue<bool>())
             {
                 PlaceWard();
             }
@@ -105,31 +106,31 @@ namespace AutoJungle
 
         private static void CastHighPrioritySpells()
         {
-            var target = GameInfo.Target;
+            var target = _GameInfo.Target;
             switch (ObjectManager.Player.ChampionName)
             {
                 case "Jax":
-                    var eActive = Player.HasBuff("JaxCounterStrike");
-                    switch (GameInfo.GameState)
+                    var eActive = player.HasBuff("JaxCounterStrike");
+                    if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
                     {
-                        case State.Jungling:
-                        case State.LaneClear:
-                            var targetMob = GameInfo.Target;
-                            if (Champdata.E.IsReady() && targetMob.IsValidTarget(350) &&
-                                (Player.ManaPercent > 40 || Player.HealthPercent < 60 || Player.Level == 1) && !eActive &&
-                                GameInfo.DamageCount >= 2 || GameInfo.DamageTaken > Player.Health * 0.2f)
-                            {
-                                Champdata.E.Cast();
-                            }
-                            return;
-                        case State.FightIng:
-                            if (Champdata.E.IsReady() &&
-                                ((Champdata.Q.CanCast(target) && !eActive) || (target.IsValidTarget(350)) ||
-                                 ((GameInfo.DamageCount >= 2 || GameInfo.DamageTaken > Player.Health * 0.2f) || !eActive)))
-                            {
-                                Champdata.E.Cast();
-                            }
-                            break;
+                        var targetMob = _GameInfo.Target;
+                        if (Champdata.E.IsReady() && targetMob.IsValidTarget(350) &&
+                            (player.ManaPercent > 40 || player.HealthPercent < 60 || player.Level == 1) && !eActive &&
+                            _GameInfo.DamageCount >= 2 || _GameInfo.DamageTaken > player.Health * 0.2f)
+                        {
+                            Champdata.E.Cast();
+                        }
+                        return;
+                    }
+                    if (_GameInfo.GameState == State.FightIng)
+                    {
+                        if (Champdata.E.IsReady() &&
+                            ((Champdata.Q.CanCast(target) && !eActive) || (target.IsValidTarget(350)) ||
+                             ((_GameInfo.DamageCount >= 2 || _GameInfo.DamageTaken > player.Health * 0.2f) || !eActive)))
+                        {
+                            Champdata.E.Cast();
+                        }
+                        return;
                     }
                     break;
             }
@@ -137,103 +138,100 @@ namespace AutoJungle
 
         private static bool HighPriorityPositioning()
         {
-            if (Player.ChampionName != "Skarner")
+            if (player.ChampionName == "Skarner")
             {
-                return false;
+                var capturablePoints =
+                    ObjectManager.Get<Obj_AI_Base>()
+                        .Where(o => o.Distance(player) < 700 && !o.IsAlly && o.Name == "SkarnerPassiveCrystal")
+                        .OrderBy(o => o.Distance(player))
+                        .FirstOrDefault();
+                if (capturablePoints != null)
+                {
+                    _GameInfo.MoveTo = capturablePoints.Position;
+                    _GameInfo.GameState = State.Positioning;
+                    return true;
+                }
             }
-            var capturablePoints =
-                ObjectManager.Get<Obj_AI_Base>()
-                    .Where(o => o.Distance(Player) < 700 && !o.IsAlly && o.Name == "SkarnerPassiveCrystal")
-                    .OrderBy(o => o.Distance(Player))
-                    .FirstOrDefault();
-            if (capturablePoints == null)
-            {
-                return false;
-            }
-            GameInfo.MoveTo = capturablePoints.Position;
-            GameInfo.GameState = State.Positioning;
-            return true;
+            return false;
         }
 
         private static void PlaceWard()
         {
-            if (GameInfo.ClosestWardPos.IsValid() && Items.CanUseItem(3340))
+            if (_GameInfo.ClosestWardPos.IsValid() && Items.CanUseItem(3340))
             {
-                Items.UseItem(3340, GameInfo.ClosestWardPos);
+                Items.UseItem(3340, _GameInfo.ClosestWardPos);
             }
         }
 
         private static bool CheckAfk()
         {
-            if (Player.IsMoving || Player.IsWindingUp || Player.IsRecalling() || Player.Level == 1)
+            if (player.IsMoving || player.IsWindingUp || player.IsRecalling() || player.Level == 1)
             {
-                GameInfo.Afk = 0;
+                _GameInfo.afk = 0;
             }
             else
             {
-                GameInfo.Afk++;
+                _GameInfo.afk++;
             }
-            if (GameInfo.Afk <= 15 || Player.InFountain())
+            if (_GameInfo.afk > 15 && !player.InFountain())
             {
-                return false;
+                player.Spellbook.CastSpell(SpellSlot.Recall);
+                return true;
             }
-            Player.Spellbook.CastSpell(SpellSlot.Recall);
-            return true;
+            return false;
         }
 
         private static void CheckCamp()
         {
-            var nextMob = GetNextMob();
+            MonsterInfo nextMob = GetNextMob();
             if (nextMob != null && !nextMob.IsAlive())
             {
                 //Console.WriteLine(nextMob.name + " skipped: " + (Environment.TickCount - nextMob.TimeAtDead / 1000f));
-                GameInfo.CurrentMonster++;
-                GameInfo.MoveTo = nextMob.Position;
+                _GameInfo.CurrentMonster++;
+                _GameInfo.MoveTo = nextMob.Position;
                 nextMob =
-                    GameInfo.MonsterList.OrderBy(m => m.Index).FirstOrDefault(m => m.Index == GameInfo.CurrentMonster);
+                    _GameInfo.MonsterList.OrderBy(m => m.Index).FirstOrDefault(m => m.Index == _GameInfo.CurrentMonster);
             }
-            if (GameInfo.GameState != State.Positioning)
+            if (_GameInfo.GameState == State.Positioning)
             {
-                return;
-            }
-            if (Helpers.GetRealDistance(Player, GameInfo.MoveTo) < 500 && GameInfo.MinionsAround == 0 &&
-                Player.Level > 1)
-            {
-                GameInfo.CurrentMonster++;
-                if (nextMob != null)
+                if (Helpers.GetRealDistance(player, _GameInfo.MoveTo) < 500 && _GameInfo.MinionsAround == 0 &&
+                    player.Level > 1)
                 {
-                    GameInfo.MoveTo = nextMob.Position;
+                    _GameInfo.CurrentMonster++;
+                    if (nextMob != null)
+                    {
+                        _GameInfo.MoveTo = nextMob.Position;
+                    }
+                    //Console.WriteLine("CheckCamp - MoveTo: CurrentMonster++");
                 }
-                //Console.WriteLine("CheckCamp - MoveTo: CurrentMonster++");
-            }
 
-            var probablySkippedMob = Helpers.GetNearest(Player.Position, 1000);
-            if (probablySkippedMob == null || !(probablySkippedMob.Distance(GameInfo.MoveTo) > 200))
-            {
-                return;
-            }
-            var monster = GameInfo.MonsterList.FirstOrDefault(m => probablySkippedMob.Name.Contains(m.Name));
-            if (monster != null && monster.Index < 13)
-            {
-                GameInfo.MoveTo = probablySkippedMob.Position;
+                var probablySkippedMob = Helpers.GetNearest(player.Position, 1000);
+                if (probablySkippedMob != null && probablySkippedMob.Distance(_GameInfo.MoveTo) > 200)
+                {
+                    var monster = _GameInfo.MonsterList.FirstOrDefault(m => probablySkippedMob.Name.Contains(m.name));
+                    if (monster != null && monster.Index < 13)
+                    {
+                        _GameInfo.MoveTo = probablySkippedMob.Position;
+                    }
+                }
             }
         }
 
         private static void SetGameInfo()
         {
-            GameInfo.GroupWithoutTarget = false;
+            _GameInfo.GroupWithoutTarget = false;
             ResetDamageTakenTimer();
             AutoLevel.Enable();
-            GameInfo.WaitOnFountain = WaitOnFountain();
-            GameInfo.ShouldRecall = ShouldRecall();
-            GameInfo.GameState = SetGameState();
-            GameInfo.MoveTo = GetMovePosition();
-            GameInfo.Target = GetTarget();
-            GameInfo.MinionsAround = Helpers.GetMobs(Player.Position, 700).Count;
-            GameInfo.SmiteableMob = Helpers.GetNearest(Player.Position);
-            GameInfo.AllyStructures = GetStructures(true, GameInfo.SpawnPointEnemy);
-            GameInfo.EnemyStructures = GetStructures(false, GameInfo.SpawnPoint);
-            GameInfo.ClosestWardPos = Helpers.GetClosestWard();
+            _GameInfo.WaitOnFountain = WaitOnFountain();
+            _GameInfo.ShouldRecall = ShouldRecall();
+            _GameInfo.GameState = SetGameState();
+            _GameInfo.MoveTo = GetMovePosition();
+            _GameInfo.Target = GetTarget();
+            _GameInfo.MinionsAround = Helpers.getMobs(player.Position, 700).Count;
+            _GameInfo.SmiteableMob = Helpers.GetNearest(player.Position);
+            _GameInfo.AllyStructures = GetStructures(true, _GameInfo.SpawnPointEnemy);
+            _GameInfo.EnemyStructures = GetStructures(false, _GameInfo.SpawnPoint);
+            _GameInfo.ClosestWardPos = Helpers.GetClosestWard();
         }
 
         private static IEnumerable<Vector3> GetStructures(bool ally, Vector3 basePos)
@@ -261,77 +259,84 @@ namespace AutoJungle
 
         private static bool RecallHander()
         {
-            if ((GameInfo.GameState != State.Positioning && GameInfo.GameState != State.Retreat) ||
-                !GameInfo.MonsterList.Any(m => m.Position.Distance(Player.Position) < 800))
+            if ((_GameInfo.GameState != State.Positioning && _GameInfo.GameState != State.Retreat) ||
+                !_GameInfo.MonsterList.Any(m => m.Position.Distance(player.Position) < 800))
             {
                 return false;
             }
-            if (Helpers.GetMobs(Player.Position, 1300).Count > 0)
+            if (Helpers.getMobs(player.Position, 1300).Count > 0)
             {
                 return false;
             }
-            if (Player.InFountain() || Player.ServerPosition.Distance(GameInfo.SpawnPoint) < 1000)
+            if (player.InFountain() || player.ServerPosition.Distance(_GameInfo.SpawnPoint) < 1000)
             {
                 return false;
             }
-            if ((GameInfo.ShouldRecall && !Player.IsRecalling() && !Player.InFountain()) &&
-                (GameInfo.GameState == State.Positioning ||
-                 (GameInfo.GameState == State.Retreat &&
-                  (GameInfo.Afk > 15 ||
-                   ObjectManager.Get<Obj_AI_Base>().Count(o => o.IsEnemy && o.Distance(Player) < 2000) == 0))))
+            if ((_GameInfo.ShouldRecall && !player.IsRecalling() && !player.InFountain()) &&
+                (_GameInfo.GameState == State.Positioning ||
+                 (_GameInfo.GameState == State.Retreat &&
+                  (_GameInfo.afk > 15 ||
+                   ObjectManager.Get<Obj_AI_Base>().Count(o => o.IsEnemy && o.Distance(player) < 2000) == 0))))
             {
-                if (Player.Distance(GameInfo.SpawnPoint) > 6000)
+                if (player.Distance(_GameInfo.SpawnPoint) > 6000)
                 {
-                    Player.Spellbook.CastSpell(SpellSlot.Recall);
+                    player.Spellbook.CastSpell(SpellSlot.Recall);
                 }
                 else
                 {
-                    Player.IssueOrder(GameObjectOrder.MoveTo, GameInfo.SpawnPoint);
+                    player.IssueOrder(GameObjectOrder.MoveTo, _GameInfo.SpawnPoint);
                 }
                 return true;
             }
 
-            return Player.IsRecalling();
+            if (player.IsRecalling())
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static void CastSpells()
         {
-            if (GameInfo.Target == null)
+            if (_GameInfo.Target == null)
             {
                 return;
             }
-            switch (GameInfo.GameState)
+            switch (_GameInfo.GameState)
             {
                 case State.FightIng:
-                    GameInfo.Champdata.Combo();
+                    _GameInfo.Champdata.Combo();
                     break;
                 case State.Ganking:
                     break;
                 case State.Jungling:
-                    GameInfo.Champdata.JungleClear();
+                    _GameInfo.Champdata.JungleClear();
                     UsePotions();
                     break;
                 case State.LaneClear:
-                    GameInfo.Champdata.JungleClear();
+                    _GameInfo.Champdata.JungleClear();
                     UsePotions();
                     break;
                 case State.Objective:
-                    if (GameInfo.Target is Obj_AI_Hero)
+                    if (_GameInfo.Target is Obj_AI_Hero)
                     {
-                        GameInfo.Champdata.Combo();
+                        _GameInfo.Champdata.Combo();
                     }
                     else
                     {
-                        GameInfo.Champdata.JungleClear();
+                        _GameInfo.Champdata.JungleClear();
                     }
+                    break;
+                default:
                     break;
             }
         }
 
         private static void UsePotions()
         {
-            if (Items.HasItem(2031) && Items.CanUseItem(2031) && Player.HealthPercent < Menu.Item("HealthToPotion").GetValue<Slider>().Value &&
-                !Player.Buffs.Any(b => b.Name.Equals("ItemCrystalFlask")))
+            if (Items.HasItem(2031) && Items.CanUseItem(2031) && player.HealthPercent < menu.Item("HealthToPotion").GetValue<Slider>().Value &&
+                !player.Buffs.Any(b => b.Name.Equals("ItemCrystalFlask")))
             {
                 Items.UseItem(2031);
             }
@@ -339,59 +344,59 @@ namespace AutoJungle
 
         private static void MoveToPos()
         {
-            if ((GameInfo.GameState != State.Positioning && GameInfo.GameState != State.Ganking &&
-                 GameInfo.GameState != State.Retreat && GameInfo.GameState != State.Grouping) ||
-                !GameInfo.MoveTo.IsValid())
+            if ((_GameInfo.GameState != State.Positioning && _GameInfo.GameState != State.Ganking &&
+                 _GameInfo.GameState != State.Retreat && _GameInfo.GameState != State.Grouping) ||
+                !_GameInfo.MoveTo.IsValid())
             {
                 return;
             }
-            if (!Helpers.CheckPath(Player.GetPath(GameInfo.MoveTo)))
+            if (!Helpers.CheckPath(player.GetPath(_GameInfo.MoveTo)))
             {
-                GameInfo.CurrentMonster++;
+                _GameInfo.CurrentMonster++;
                 if (Debug)
                 {
-                    Console.WriteLine(@"MoveTo: CurrentMonster++2");
+                    Console.WriteLine("MoveTo: CurrentMonster++2");
                 }
             }
-            if (GameInfo.GameState == State.Retreat && GameInfo.MoveTo.Distance(Player.Position) < 100)
+            if (_GameInfo.GameState == State.Retreat && _GameInfo.MoveTo.Distance(player.Position) < 100)
             {
                 return;
             }
-            if (!GameInfo.MoveTo.IsValid()
-                || (!(GameInfo.MoveTo.Distance(GameInfo.LastClick) > 150) && (Player.IsMoving || GameInfo.Afk <= 10)))
+            if (_GameInfo.MoveTo.IsValid() &&
+                (_GameInfo.MoveTo.Distance(_GameInfo.LastClick) > 150 || (!player.IsMoving && _GameInfo.afk > 10)))
             {
-                return;
-            }
-            if (Player.IsMoving)
-            {
-                var x = (int) GameInfo.MoveTo.X;
-                var y = (int) GameInfo.MoveTo.Y;
-                Player.IssueOrder(
-                    GameObjectOrder.MoveTo,
-                    new Vector3(Random.Next(x, x + 100), Random.Next(y, y + 100), GameInfo.MoveTo.Z));
-            }
-            else
-            {
-                Player.IssueOrder(GameObjectOrder.MoveTo, GameInfo.MoveTo);
+                if (player.IsMoving)
+                {
+                    int x, y;
+                    x = (int) _GameInfo.MoveTo.X;
+                    y = (int) _GameInfo.MoveTo.Y;
+                    player.IssueOrder(
+                        GameObjectOrder.MoveTo,
+                        new Vector3(Random.Next(x, x + 100), Random.Next(y, y + 100), _GameInfo.MoveTo.Z));
+                }
+                else
+                {
+                    player.IssueOrder(GameObjectOrder.MoveTo, _GameInfo.MoveTo);
+                }
             }
         }
 
         private static bool Shopping()
         {
-            if (!Player.InFountain())
+            if (!player.InFountain())
             {
                 if (Debug)
                 {
-                    Console.WriteLine(@"Shopping: Not in shop - false");
+                    Console.WriteLine("Shopping: Not in shop - false");
                 }
                 return false;
             }
-            if (ObjectManager.Player.HasBuff("ElixirOfWrath") ||
-                    ObjectManager.Player.HasBuff("ElixirOfIron") ||
-                     ObjectManager.Player.HasBuff("ElixirOfSorcery"))
+
+            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || ObjectManager.Player.HasBuff("ElixirOfSorcery"))
             {
                 return false;
             }
+
             var current =
                 ItemHandler.ItemList.Where(i => Items.HasItem(i.ItemId))
                     .OrderByDescending(i => i.Index)
@@ -408,40 +413,36 @@ namespace AutoJungle
                 {
                     if (Debug)
                     {
-                        Console.WriteLine(@"Shopping: No next Item - false");
+                        Console.WriteLine("Shopping: No next Item - false");
                     }
                     return false;
                 }
-                if (itemToBuy.Price <= Player.Gold)
+                if (itemToBuy.Price <= player.Gold)
                 {
-                    Player.BuyItem((ItemId) itemToBuy.ItemId);
+                    player.BuyItem((ItemId) itemToBuy.ItemId);
                     if (itemToBuy.Index > 9 && Items.HasItem(2031))
                     {
-                        Player.SellItem(Player.InventoryItems.First(i => i.Id == (ItemId) 2031).Slot);
+                        player.SellItem(player.InventoryItems.First(i => i.Id == (ItemId) 2031).Slot);
                     }
                     var nextItem = orderedList.FirstOrDefault(i => i.Index == itemToBuy.Index + 1);
                     if (nextItem != null)
                     {
-                        GameInfo.NextItemPrice = nextItem.Price;
+                        _GameInfo.NextItemPrice = nextItem.Price;
                     }
                     if (Debug)
                     {
-                        Console.WriteLine(@"Shopping: Shopping- " + itemToBuy.Name + @" - true");
+                        Console.WriteLine("Shopping: Shopping- " + itemToBuy.Name + " - true");
                     }
                     return true;
                 }
             }
             else
             {
-                var firstOrDefault = ItemHandler.ItemList.FirstOrDefault(i => i.Index == 1);
-                if (firstOrDefault != null)
-                {
-                    Player.BuyItem((ItemId) firstOrDefault.ItemId);
-                }
+                player.BuyItem((ItemId) ItemHandler.ItemList.FirstOrDefault(i => i.Index == 1).ItemId);
                 var nextItem = ItemHandler.ItemList.FirstOrDefault(i => i.Index == 2);
                 if (nextItem != null)
                 {
-                    GameInfo.NextItemPrice = nextItem.Price;
+                    _GameInfo.NextItemPrice = nextItem.Price;
                 }
                 return true;
             }
@@ -449,22 +450,22 @@ namespace AutoJungle
 
             if (Debug)
             {
-                Console.WriteLine(@"Shopping: End - false");
+                Console.WriteLine("Shopping: End - false");
             }
             return false;
         }
 
         private static Obj_AI_Base GetTarget()
         {
-            switch (GameInfo.GameState)
+            switch (_GameInfo.GameState)
             {
                 case State.Objective:
-                    var obj = Helpers.GetNearest(Player.Position, GameInfo.ChampionRange);
+                    var obj = Helpers.GetNearest(player.Position, GameInfo.ChampionRange);
                     if (obj != null && (obj.Name.Contains("Dragon") || obj.Name.Contains("Baron")) &&
-                        (HealthPrediction.GetHealthPrediction(obj, 3000) + 500 < Jungle.SmiteDamage(obj) ||
-                         (GameInfo.EnemiesAround == 0 && Player.Level > 8 &&
+                        (HealthPrediction.GetHealthPrediction(obj, 3000) + 500 < Jungle.smiteDamage(obj) ||
+                         (_GameInfo.EnemiesAround == 0 && player.Level > 8 &&
                           MinionManager.GetMinions(
-                              Player.Position, GameInfo.ChampionRange, MinionTypes.All, MinionTeam.NotAlly)
+                              player.Position, GameInfo.ChampionRange, MinionTypes.All, MinionTeam.NotAlly)
                               .Take(5)
                               .FirstOrDefault(m => m.Name.Contains("Sru_Crab") && m.Health < m.MaxHealth) == null)))
                     {
@@ -472,80 +473,91 @@ namespace AutoJungle
                     }
                     else
                     {
-                        return GameInfo.EnemiesAround > 0 ? Helpers.GetTargetEnemy() : null;
+                        return _GameInfo.EnemiesAround > 0 ? Helpers.GetTargetEnemy() : null;
                     }
+                    break;
                 case State.FightIng:
                     return Helpers.GetTargetEnemy();
+                    break;
                 case State.Ganking:
                     return null;
+                    break;
                 case State.Jungling:
-                    return Helpers.GetMobs(Player.Position, 1000).OrderByDescending(m => m.MaxHealth).FirstOrDefault();
+                    return Helpers.getMobs(player.Position, 1000).OrderByDescending(m => m.MaxHealth).FirstOrDefault();
+                    break;
                 case State.LaneClear:
                     return
-                        Helpers.GetMobs(Player.Position, GameInfo.ChampionRange)
+                        Helpers.getMobs(player.Position, GameInfo.ChampionRange)
                             .Where(m => !m.UnderTurret(true))
-                            .OrderByDescending(m => Player.GetAutoAttackDamage(m, true) > m.Health)
-                            .ThenBy(m => m.Distance(Player))
+                            .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
+                            .ThenBy(m => m.Distance(player))
                             .FirstOrDefault();
+                    break;
                 case State.Pushing:
                     var enemy = Helpers.GetTargetEnemy();
                     if (enemy != null)
                     {
-                        GameInfo.Target = enemy;
-                        GameInfo.Champdata.Combo();
+                        _GameInfo.Target = enemy;
+                        _GameInfo.Champdata.Combo();
                         return enemy;
                     }
                     var enemyTurret =
                         ObjectManager.Get<Obj_AI_Turret>()
                             .FirstOrDefault(
                                 t =>
-                                    t.IsEnemy && !t.IsDead && t.Distance(Player) < 2000 &&
-                                    Helpers.GetAllyMobs(t.Position, 500).Count > 0);
-                    if (enemyTurret != null)
-                    {
-                        GameInfo.Champdata.JungleClear();
-                        return enemyTurret;
-                    }
+                                    t.IsEnemy && !t.IsDead && t.Distance(player) < 2000 &&
+                                    Helpers.getAllyMobs(t.Position, 1250).Count(m => m.UnderTurret(true)) > 0);
                     var mob =
-                        Helpers.GetMobs(Player.Position, GameInfo.ChampionRange)
+                        Helpers.getMobs(player.Position, GameInfo.ChampionRange)
                             .Where(
-                                m => !m.UnderTurret(true))
-                            .OrderByDescending(m => Player.GetAutoAttackDamage(m, true) > m.Health)
-                            .ThenBy(m => m.Distance(Player))
+                                m =>
+                                    (!m.UnderTurret(true) ||
+                                     (enemyTurret != null &&
+                                      Helpers.getAllyMobs(enemyTurret.Position, 1250).Count(o => o.UnderTurret(true)) >
+                                      0)))
+                            .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
+                            .ThenBy(m => m.Distance(player))
                             .FirstOrDefault();
                     if (mob != null)
                     {
-                        GameInfo.Target = mob;
-                        GameInfo.Champdata.JungleClear();
+                        _GameInfo.Target = mob;
+                        _GameInfo.Champdata.JungleClear();
                         return mob;
+                    }
+                    if (enemyTurret != null)
+                    {
+                        _GameInfo.Champdata.JungleClear();
+                        return enemyTurret;
                     }
                     break;
                 case State.Defending:
                     var enemyDef = Helpers.GetTargetEnemy();
-                    if (enemyDef != null && !GameInfo.InDanger)
+                    if (enemyDef != null && !_GameInfo.InDanger)
                     {
-                        GameInfo.Target = enemyDef;
-                        GameInfo.Champdata.Combo();
+                        _GameInfo.Target = enemyDef;
+                        _GameInfo.Champdata.Combo();
                         return enemyDef;
                     }
                     var mobDef =
-                        Helpers.GetMobs(Player.Position, GameInfo.ChampionRange)
+                        Helpers.getMobs(player.Position, GameInfo.ChampionRange)
                             .OrderByDescending(m => m.CountEnemiesInRange(500) == 0)
-                            .ThenByDescending(m => Player.GetAutoAttackDamage(m, true) > m.Health)
+                            .ThenByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
                             .ThenBy(m => m.CountEnemiesInRange(500))
                             .FirstOrDefault();
                     if (mobDef != null)
                     {
-                        GameInfo.Target = mobDef;
-                        GameInfo.Champdata.JungleClear();
+                        _GameInfo.Target = mobDef;
+                        _GameInfo.Champdata.JungleClear();
                         return mobDef;
                     }
+                    break;
+                default:
                     break;
             }
 
             if (Debug)
             {
-                Console.WriteLine(@"GetTarget: Cant get target");
+                Console.WriteLine("GetTarget: Cant get target");
             }
             return null;
         }
@@ -558,43 +570,42 @@ namespace AutoJungle
                 var obj = Helpers.GetNearest(pos);
                 if (obj != null && obj.Health < obj.MaxHealth - 300)
                 {
-                    if (Player.Distance(pos) > Jungle.SmiteRange)
+                    if (player.Distance(pos) > Jungle.smiteRange)
                     {
-                        GameInfo.MoveTo = pos;
+                        _GameInfo.MoveTo = pos;
                         return true;
                     }
                 }
             }
-            if ((!Jungle.SmiteReady() && (Player.Level < 14 || !(Player.HealthPercent > 80))) || Player.Level < 9
-                || !(Player.Distance(Camps.Dragon.Position) < GameInfo.ChampionRange))
+            if ((Jungle.SmiteReady() || (player.Level >= 14 && player.HealthPercent > 80)) && player.Level >= 9 &&
+                player.Distance(Camps.Dragon.Position) < GameInfo.ChampionRange)
             {
-                return false;
+                var drake = Helpers.GetNearest(player.Position, GameInfo.ChampionRange);
+                if (drake != null && drake.Name.Contains("Dragon"))
+                {
+                    _GameInfo.CurrentMonster = 13;
+                    _GameInfo.MoveTo = drake.Position;
+                    return true;
+                }
             }
-            var drake = Helpers.GetNearest(Player.Position, GameInfo.ChampionRange);
-            if (drake == null || !drake.Name.Contains("Dragon"))
-            {
-                return false;
-            }
-            GameInfo.CurrentMonster = 13;
-            GameInfo.MoveTo = drake.Position;
-            return true;
+            return false;
         }
 
         private static bool CheckGanking()
         {
             Obj_AI_Hero gankTarget = null;
-            if (Player.Level >= Menu.Item("GankLevel").GetValue<Slider>().Value &&
-                ((Player.Mana > GameInfo.Champdata.R.ManaCost && Player.MaxMana > 100) || Player.MaxMana <= 100))
+            if (player.Level >= menu.Item("GankLevel").GetValue<Slider>().Value &&
+                ((player.Mana > _GameInfo.Champdata.R.ManaCost && player.MaxMana > 100) || player.MaxMana <= 100))
             {
                 var heroes =
                     HeroManager.Enemies.Where(
                         e =>
-                            e.Distance(Player) < Menu.Item("GankRange").GetValue<Slider>().Value && e.IsValidTarget() &&
-                            !e.UnderTurret(true) && !CheckForRetreat(e, e.Position)).OrderBy(e => Player.Distance(e));
+                            e.Distance(player) < menu.Item("GankRange").GetValue<Slider>().Value && e.IsValidTarget() &&
+                            !e.UnderTurret(true) && !CheckForRetreat(e, e.Position)).OrderBy(e => player.Distance(e));
                 foreach (var possibleTarget in heroes)
                 {
-                    var myDmg = Helpers.GetComboDmg(Player, possibleTarget);
-                    if (Player.Level + 1 <= possibleTarget.Level)
+                    var myDmg = Helpers.GetComboDMG(player, possibleTarget);
+                    if (player.Level + 1 <= possibleTarget.Level)
                     {
                         continue;
                     }
@@ -603,7 +614,7 @@ namespace AutoJungle
                     {
                         continue;
                     }
-                    if (Helpers.GetComboDmg(possibleTarget, Player) > Player.Health)
+                    if (Helpers.GetComboDMG(possibleTarget, player) > player.Health)
                     {
                         continue;
                     }
@@ -611,44 +622,42 @@ namespace AutoJungle
                         HeroManager.Allies.Where(a => !a.IsDead && a.Distance(possibleTarget) < 3000)
                             .OrderBy(a => a.Distance(possibleTarget))
                             .FirstOrDefault();
-                    var hp = possibleTarget.Health - myDmg * Menu.Item("GankFrequency").GetValue<Slider>().Value / 100f;
+                    var hp = possibleTarget.Health - myDmg * menu.Item("GankFrequency").GetValue<Slider>().Value / 100f;
                     if (ally != null)
                     {
-                        hp -= Helpers.GetComboDmg(ally, possibleTarget) *
-                              Menu.Item("GankFrequency").GetValue<Slider>().Value / 100;
+                        hp -= Helpers.GetComboDMG(ally, possibleTarget) *
+                              menu.Item("GankFrequency").GetValue<Slider>().Value / 100;
                     }
-                    if (!(hp < 0))
+                    if (hp < 0)
                     {
-                        continue;
+                        gankTarget = possibleTarget;
+                        break;
                     }
-                    gankTarget = possibleTarget;
-                    break;
                 }
             }
-            if (gankTarget == null)
+            if (gankTarget != null)
             {
-                return false;
-            }
-            var gankPosition =
-                Helpers.GankPos.Where(p => p.Distance(gankTarget.Position) < 2000)
-                    .OrderBy(p => Player.Distance(gankTarget.Position))
-                    .FirstOrDefault();
-            if (gankTarget.Distance(Player) > 2000 && gankPosition.IsValid() &&
-                gankPosition.Distance(gankTarget.Position) < 2000 &&
-                Player.Distance(gankTarget) > gankPosition.Distance(gankTarget.Position))
-            {
-                GameInfo.MoveTo = gankPosition;
-                return true;
-            }
-            else if (gankTarget.Distance(Player) <= 2000)
-            {
-                GameInfo.MoveTo = gankTarget.Position;
-                return true;
-            }
-            else if (!gankPosition.IsValid())
-            {
-                GameInfo.MoveTo = gankTarget.Position;
-                return true;
+                var gankPosition =
+                    Helpers.GankPos.Where(p => p.Distance(gankTarget.Position) < 2000)
+                        .OrderBy(p => player.Distance(gankTarget.Position))
+                        .FirstOrDefault();
+                if (gankTarget.Distance(player) > 2000 && gankPosition.IsValid() &&
+                    gankPosition.Distance(gankTarget.Position) < 2000 &&
+                    player.Distance(gankTarget) > gankPosition.Distance(gankTarget.Position))
+                {
+                    _GameInfo.MoveTo = gankPosition;
+                    return true;
+                }
+                else if (gankTarget.Distance(player) <= 2000)
+                {
+                    _GameInfo.MoveTo = gankTarget.Position;
+                    return true;
+                }
+                else if (!gankPosition.IsValid())
+                {
+                    _GameInfo.MoveTo = gankTarget.Position;
+                    return true;
+                }
             }
             return false;
         }
@@ -656,60 +665,60 @@ namespace AutoJungle
         private static State SetGameState()
         {
             var enemy = Helpers.GetTargetEnemy();
-            var tempstate = State.Null;
-            if (CheckForRetreat(enemy, Player.Position))
+            State tempstate = State.Null;
+            if (CheckForRetreat(enemy, player.Position))
             {
                 tempstate = State.Retreat;
             }
-            if (tempstate == State.Null && GameInfo.EnemiesAround == 0 &&
+            if (tempstate == State.Null && _GameInfo.EnemiesAround == 0 &&
                 (CheckObjective(Camps.Baron.Position) || CheckObjective(Camps.Dragon.Position)))
             {
                 tempstate = State.Objective;
             }
-            if (tempstate == State.Null && GameInfo.GameState != State.Retreat && GameInfo.GameState != State.Pushing &&
-                GameInfo.GameState != State.Defending &&
+            if (tempstate == State.Null && _GameInfo.GameState != State.Retreat && _GameInfo.GameState != State.Pushing &&
+                _GameInfo.GameState != State.Defending &&
                 ((enemy != null && !CheckForRetreat(enemy, enemy.Position) &&
-                  Helpers.GetRealDistance(Player, enemy.Position) < GameInfo.ChampionRange)) ||
-                Player.HasBuff("skarnerimpalevo"))
+                  Helpers.GetRealDistance(player, enemy.Position) < GameInfo.ChampionRange)) ||
+                player.HasBuff("skarnerimpalevo"))
             {
                 tempstate = State.FightIng;
             }
-            if (tempstate == State.Null && Player.Level >= 6 && CheckForGrouping())
+            if (tempstate == State.Null && player.Level >= 6 && CheckForGrouping())
             {
-                if (GameInfo.MoveTo.Distance(Player.Position) <= GameInfo.ChampionRange)
+                if (_GameInfo.MoveTo.Distance(player.Position) <= GameInfo.ChampionRange)
                 {
                     if (
                         ObjectManager.Get<Obj_AI_Turret>()
-                            .FirstOrDefault(t => t.Distance(GameInfo.MoveTo) < 2000 && t.IsAlly) != null &&
-                        (GameInfo.GameState == State.Grouping || GameInfo.GameState == State.Defending))
+                            .FirstOrDefault(t => t.Distance(_GameInfo.MoveTo) < 2000 && t.IsAlly) != null &&
+                        (_GameInfo.GameState == State.Grouping || _GameInfo.GameState == State.Defending))
                     {
                         tempstate = State.Defending;
                     }
-                    else if (GameInfo.GameState != State.Grouping && GameInfo.GameState != State.Retreat &&
-                             GameInfo.GameState != State.Jungling)
+                    else if (_GameInfo.GameState != State.Grouping && _GameInfo.GameState != State.Retreat &&
+                             _GameInfo.GameState != State.Jungling)
                     {
                         tempstate = State.Pushing;
                     }
                 }
                 if (tempstate == State.Null &&
-                    (GameInfo.MoveTo.Distance(Player.Position) > GameInfo.ChampionRange || GameInfo.GroupWithoutTarget) &&
-                    (GameInfo.GameState == State.Positioning || GameInfo.GameState == State.Grouping))
+                    (_GameInfo.MoveTo.Distance(player.Position) > GameInfo.ChampionRange || _GameInfo.GroupWithoutTarget) &&
+                    (_GameInfo.GameState == State.Positioning || _GameInfo.GameState == State.Grouping))
                 {
                     tempstate = State.Grouping;
                 }
             }
-            if (tempstate == State.Null && GameInfo.EnemiesAround == 0 &&
-                (GameInfo.GameState == State.Ganking || GameInfo.GameState == State.Positioning) && CheckGanking())
+            if (tempstate == State.Null && _GameInfo.EnemiesAround == 0 &&
+                (_GameInfo.GameState == State.Ganking || _GameInfo.GameState == State.Positioning) && CheckGanking())
             {
                 tempstate = State.Ganking;
             }
-            if (tempstate == State.Null && GameInfo.MinionsAround > 0 &&
-                (GameInfo.MonsterList.Any(m => m.Position.Distance(Player.Position) < 700) ||
-                 GameInfo.SmiteableMob != null) && GameInfo.GameState != State.Retreat)
+            if (tempstate == State.Null && _GameInfo.MinionsAround > 0 &&
+                (_GameInfo.MonsterList.Any(m => m.Position.Distance(player.Position) < 700) ||
+                 _GameInfo.SmiteableMob != null) && _GameInfo.GameState != State.Retreat)
             {
                 tempstate = State.Jungling;
             }
-            if (tempstate == State.Null && CheckLaneClear(Player.Position))
+            if (tempstate == State.Null && CheckLaneClear(player.Position))
             {
                 tempstate = State.LaneClear;
             }
@@ -717,11 +726,11 @@ namespace AutoJungle
             {
                 tempstate = State.Positioning;
             }
-            if (tempstate == GameInfo.GameState)
+            if (tempstate == _GameInfo.GameState)
             {
                 return tempstate;
             }
-            else if (Environment.TickCount - GameStateChanging > 1300 || GameInfo.GameState == State.Retreat ||
+            else if (Environment.TickCount - GameStateChanging > 1300 || _GameInfo.GameState == State.Retreat ||
                      tempstate == State.FightIng)
             {
                 GameStateChanging = Environment.TickCount;
@@ -729,54 +738,57 @@ namespace AutoJungle
             }
             else
             {
-                return GameInfo.GameState;
+                return _GameInfo.GameState;
             }
         }
 
         private static bool CheckLaneClear(Vector3 pos)
         {
             return (Helpers.AlliesThere(pos) == 0 || Helpers.AlliesThere(pos) >= 2 ||
-                    Player.Distance(GameInfo.SpawnPoint) < 6000 || Player.Distance(GameInfo.SpawnPointEnemy) < 6000 ||
-                    Player.Level >= 10) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
-                   Helpers.GetMobs(pos, GameInfo.ChampionRange).Count +
-                   GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange) > 0 &&
-                   !GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && GameInfo.SmiteableMob == null &&
-                   GameInfo.GameState != State.Retreat;
+                    player.Distance(_GameInfo.SpawnPoint) < 6000 || player.Distance(_GameInfo.SpawnPointEnemy) < 6000 ||
+                    player.Level >= 10) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
+                   Helpers.getMobs(pos, GameInfo.ChampionRange).Count +
+                   _GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange) > 0 &&
+                   !_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && _GameInfo.SmiteableMob == null &&
+                   _GameInfo.GameState != State.Retreat;
         }
 
         private static bool CheckForRetreat(Obj_AI_Base enemy, Vector3 pos)
         {
-            if (GameInfo.GameState == State.Jungling)
+            if (_GameInfo.GameState == State.Jungling)
             {
                 return false;
             }
-            if (enemy != null && !enemy.UnderTurret(true) && Player.Distance(enemy) < 350 && !GameInfo.AttackedByTurret)
+            if (enemy != null && !enemy.UnderTurret(true) && player.Distance(enemy) < 350 && !_GameInfo.AttackedByTurret)
             {
                 return false;
             }
             var indanger = ((Helpers.GetHealth(true, pos) +
-                             ((Player.Distance(pos) < GameInfo.ChampionRange) ? 0 : Player.Health)) * 1.3f <
+                             ((player.Distance(pos) < GameInfo.ChampionRange) ? 0 : player.Health)) * 1.3f <
                             Helpers.GetHealth(false, pos) && pos.CountEnemiesInRange(GameInfo.ChampionRange) > 1 &&
                             Helpers.AlliesThere(pos, 500) == 0) ||
-                           Player.HealthPercent < Menu.Item("HealtToBack").GetValue<Slider>().Value;
-            if (!indanger && !GameInfo.AttackedByTurret)
+                           player.HealthPercent < menu.Item("HealtToBack").GetValue<Slider>().Value;
+            if (indanger || _GameInfo.AttackedByTurret)
             {
-                return false;
-            }
-            if (((enemy != null && Helpers.AlliesThere(pos, 600) > 0) && Player.HealthPercent > 25))
-            {
-                return false;
-            }
-            if (GameInfo.AttackedByTurret)
-            {
-                if ((enemy != null &&
-                     (enemy.Health > Player.GetAutoAttackDamage(enemy, true) * 2 ||
-                      enemy.Distance(Player) > Orbwalking.GetRealAutoAttackRange(enemy) + 20) || enemy == null))
+                if (((enemy != null && Helpers.AlliesThere(pos, 600) > 0) && player.HealthPercent > 25))
+                {
+                    return false;
+                }
+                if (_GameInfo.AttackedByTurret)
+                {
+                    if ((enemy != null &&
+                         (enemy.Health > player.GetAutoAttackDamage(enemy, true) * 2 ||
+                          enemy.Distance(player) > Orbwalking.GetRealAutoAttackRange(enemy) + 20) || enemy == null))
+                    {
+                        return true;
+                    }
+                }
+                if (indanger)
                 {
                     return true;
                 }
             }
-            return indanger;
+            return false;
         }
 
         private static bool CheckForGrouping()
@@ -784,243 +796,254 @@ namespace AutoJungle
             //Checking grouping allies
             var ally =
                 HeroManager.Allies.FirstOrDefault(
-                    a => Helpers.AlliesThere(a.Position) >= 2 && a.Distance(GameInfo.SpawnPointEnemy) < 7000);
-            if (ally != null && !CheckForRetreat(null, ally.Position) &&
-                Helpers.CheckPath(Player.GetPath(ally.Position)))
+                    a => Helpers.AlliesThere(a.Position) >= 2 && a.Distance(_GameInfo.SpawnPointEnemy) < 7000);
+            if (ally != null && CheckLaneClear(ally.Position) && !CheckForRetreat(null, ally.Position) &&
+                Helpers.CheckPath(player.GetPath(ally.Position)))
             {
-                GameInfo.MoveTo = ally.Position.Extend(Player.Position, 200);
-                GameInfo.GroupWithoutTarget = true;
+                _GameInfo.MoveTo = ally.Position.Extend(player.Position, 200);
+                _GameInfo.GroupWithoutTarget = true;
                 if (Debug)
                 {
-                    Console.WriteLine(@"CheckForGrouping() - Checking grouping allies");
+                    Console.WriteLine("CheckForGrouping() - Checking grouping allies");
                 }
                 return true;
             }
             //Checknig base after recall
-            if (Player.Distance(GameInfo.SpawnPoint) < 5000)
+            if (player.Distance(_GameInfo.SpawnPoint) < 5000)
             {
                 var mob =
-                    Helpers.GetMobs(GameInfo.SpawnPoint, 5000)
-                        .OrderByDescending(m => Helpers.GetMobs(m.Position, 300).Count)
+                    Helpers.getMobs(_GameInfo.SpawnPoint, 5000)
+                        .OrderByDescending(m => Helpers.getMobs(m.Position, 300).Count)
                         .FirstOrDefault();
-                if (mob != null && Helpers.GetMobs(mob.Position, 300).Count > 700 &&
-                    Helpers.CheckPath(Player.GetPath(mob.Position)) && !CheckForRetreat(null, mob.Position))
+                if (mob != null && Helpers.getMobs(mob.Position, 300).Count > 700 &&
+                    Helpers.CheckPath(player.GetPath(mob.Position)) && !CheckForRetreat(null, mob.Position))
                 {
-                    GameInfo.MoveTo = mob.Position;
+                    _GameInfo.MoveTo = mob.Position;
                     if (Debug)
                     {
-                        Console.WriteLine(@"CheckForGrouping() - Checknig base after recall");
+                        Console.WriteLine("CheckForGrouping() - Checknig base after recall");
                     }
                     return true;
                 }
             }
             //Checknig enemy turrets
             foreach (var vector in
-                GameInfo.EnemyStructures.Where(
+                _GameInfo.EnemyStructures.Where(
                     s =>
-                        s.Distance(Player.Position) < Menu.Item("GankRange").GetValue<Slider>().Value &&
+                        s.Distance(player.Position) < menu.Item("GankRange").GetValue<Slider>().Value &&
                         CheckLaneClear(s)))
             {
-                var aMinis = Helpers.GetAllyMobs(vector, GameInfo.ChampionRange);
-                if (aMinis.Count <= 1)
+                var aMinis = Helpers.getAllyMobs(vector, GameInfo.ChampionRange);
+                if (aMinis.Count > 1)
                 {
-                    continue;
-                }
-                var eMinis =
-                    Helpers.GetMobs(vector, GameInfo.ChampionRange)
-                        .OrderByDescending(m => Helpers.GetMobs(m.Position, 300).Count)
-                        .FirstOrDefault();
-                if (eMinis != null)
-                {
-                    var pos = eMinis.Position;
-                    if (!Helpers.CheckPath(Player.GetPath(pos)) || CheckForRetreat(null, pos))
+                    var eMinis =
+                        Helpers.getMobs(vector, GameInfo.ChampionRange)
+                            .OrderByDescending(m => Helpers.getMobs(m.Position, 300).Count)
+                            .FirstOrDefault();
+                    if (eMinis != null)
                     {
-                        continue;
+                        var pos = eMinis.Position;
+                        if (Helpers.CheckPath(player.GetPath(pos)) && !CheckForRetreat(null, pos))
+                        {
+                            _GameInfo.MoveTo = pos;
+                            if (Debug)
+                            {
+                                Console.WriteLine("CheckForGrouping() - Checknig enemy turrets 1");
+                            }
+                            return true;
+                        }
                     }
-                    GameInfo.MoveTo = pos;
-                    if (Debug)
+                    else
                     {
-                        Console.WriteLine(@"CheckForGrouping() - Checknig enemy turrets 1");
+                        if (Helpers.CheckPath(player.GetPath(vector)) && !CheckForRetreat(null, vector))
+                        {
+                            _GameInfo.MoveTo = vector;
+                            if (Debug)
+                            {
+                                Console.WriteLine("CheckForGrouping() - Checknig enemy turrets 2");
+                            }
+                            return true;
+                        }
                     }
-                    return true;
-                }
-                else
-                {
-                    if (!Helpers.CheckPath(Player.GetPath(vector)) || CheckForRetreat(null, vector))
-                    {
-                        continue;
-                    }
-                    GameInfo.MoveTo = vector;
-                    if (Debug)
-                    {
-                        Console.WriteLine(@"CheckForGrouping() - Checknig enemy turrets 2");
-                    }
-                    return true;
                 }
             }
             //Checknig ally turrets
             foreach (var vector in
-                GameInfo.AllyStructures.Where(
-                    s => s.Distance(Player.Position) < Menu.Item("GankRange").GetValue<Slider>().Value))
+                _GameInfo.AllyStructures.Where(
+                    s => s.Distance(player.Position) < menu.Item("GankRange").GetValue<Slider>().Value))
             {
-                var eMinis = Helpers.GetMobs(vector, GameInfo.ChampionRange);
+                var eMinis = Helpers.getMobs(vector, GameInfo.ChampionRange);
                 if (!CheckLaneClear(vector))
                 {
                     continue;
                 }
-                if (eMinis.Count <= 3)
+                if (eMinis.Count > 3)
                 {
-                    continue;
-                }
-                var temp = eMinis.OrderByDescending(m => Helpers.GetMobs(m.Position, 300).Count).FirstOrDefault();
-                if (temp != null)
-                {
-                    var pos = temp.Position;
-                    if (!Helpers.CheckPath(Player.GetPath(pos)) || CheckForRetreat(null, pos))
+                    var temp = eMinis.OrderByDescending(m => Helpers.getMobs(m.Position, 300).Count).FirstOrDefault();
+                    if (temp != null)
                     {
-                        continue;
+                        var pos = temp.Position;
+                        if (Helpers.CheckPath(player.GetPath(pos)) && !CheckForRetreat(null, pos))
+                        {
+                            _GameInfo.MoveTo = pos;
+                            if (Debug)
+                            {
+                                Console.WriteLine("CheckForGrouping() - Checknig ally turrets 1");
+                            }
+                            return true;
+                        }
                     }
-                    GameInfo.MoveTo = pos;
-                    if (Debug)
+                    else
                     {
-                        Console.WriteLine(@"CheckForGrouping() - Checknig ally turrets 1");
+                        if (Helpers.CheckPath(player.GetPath(vector)) && !CheckForRetreat(null, vector))
+                        {
+                            _GameInfo.MoveTo = vector;
+                            if (Debug)
+                            {
+                                Console.WriteLine("CheckForGrouping() - Checknig ally turrets 2");
+                            }
+                            return true;
+                        }
                     }
-                    return true;
-                }
-                else
-                {
-                    if (!Helpers.CheckPath(Player.GetPath(vector)) || CheckForRetreat(null, vector))
-                    {
-                        continue;
-                    }
-                    GameInfo.MoveTo = vector;
-                    if (Debug)
-                    {
-                        Console.WriteLine(@"CheckForGrouping() - Checknig ally turrets 2");
-                    }
-                    return true;
                 }
             }
             //follow minis
-            var minis = Helpers.GetAllyMobs(Player.Position, 1000);
-            if (minis.Count >= 5 && Player.Level >= 8)
+            var minis = Helpers.getAllyMobs(player.Position, 1000);
+            if (minis.Count >= 5 && player.Level >= 8)
             {
-                var objAiBase = minis.OrderBy(m => m.Distance(GameInfo.SpawnPointEnemy)).FirstOrDefault();
+                var objAiBase = minis.OrderBy(m => m.Distance(_GameInfo.SpawnPointEnemy)).FirstOrDefault();
                 if (objAiBase != null &&
                     (objAiBase.CountAlliesInRange(GameInfo.ChampionRange) == 0 ||
-                     objAiBase.CountAlliesInRange(GameInfo.ChampionRange) >= 2 || Player.Level >= 10) &&
-                    Helpers.GetMobs(objAiBase.Position, 1000).Count == 0)
+                     objAiBase.CountAlliesInRange(GameInfo.ChampionRange) >= 2 || player.Level >= 10) &&
+                    Helpers.getMobs(objAiBase.Position, 1000).Count == 0)
                 {
-                    GameInfo.MoveTo = objAiBase.Position.Extend(GameInfo.SpawnPoint, 100);
-                    GameInfo.GroupWithoutTarget = true;
+                    _GameInfo.MoveTo = objAiBase.Position.Extend(_GameInfo.SpawnPoint, 100);
+                    _GameInfo.GroupWithoutTarget = true;
                     if (Debug)
                     {
-                        Console.WriteLine(@"CheckForGrouping() - follow minis");
+                        Console.WriteLine("CheckForGrouping() - follow minis");
                     }
                     return true;
                 }
             }
             //Checking free enemy minionwaves
-            if (Player.Level > 8)
+            if (player.Level > 8)
             {
                 var miniwaves =
-                    Helpers.GetMobs(Player.Position, Menu.Item("GankRange").GetValue<Slider>().Value)
-                        .Where(m => Helpers.GetMobs(m.Position, 1200).Count > 6 && CheckLaneClear(m.Position))
-                        .OrderByDescending(m => m.Distance(GameInfo.SpawnPoint) < 7000)
-                        .ThenByDescending(m => m.Distance(Player) < 2000)
-                        .ThenByDescending(m => Helpers.GetMobs(m.Position, 1200).Count);
+                    Helpers.getMobs(player.Position, menu.Item("GankRange").GetValue<Slider>().Value)
+                        .Where(m => Helpers.getMobs(m.Position, 1200).Count > 6 && CheckLaneClear(m.Position))
+                        .OrderByDescending(m => m.Distance(_GameInfo.SpawnPoint) < 7000)
+                        .ThenByDescending(m => m.Distance(player) < 2000)
+                        .ThenByDescending(m => Helpers.getMobs(m.Position, 1200).Count);
                 foreach (var miniwave in
-                    miniwaves.Where(miniwave => Helpers.GetMobs(miniwave.Position, 1200).Count >= 6)
+                    miniwaves.Where(miniwave => Helpers.getMobs(miniwave.Position, 1200).Count >= 6)
                         .Where(
                             miniwave =>
                                 !CheckForRetreat(null, miniwave.Position) &&
-                                Helpers.CheckPath(Player.GetPath(miniwave.Position))))
+                                Helpers.CheckPath(player.GetPath(miniwave.Position))))
                 {
-                    GameInfo.MoveTo = miniwave.Position.Extend(Player.Position, 200);
+                    _GameInfo.MoveTo = miniwave.Position.Extend(player.Position, 200);
                     if (Debug)
                     {
-                        Console.WriteLine(@"CheckForGrouping() - Checking free enemy minionwavess");
+                        Console.WriteLine("CheckForGrouping() - Checking free enemy minionwavess");
                     }
                     return true;
                 }
             }
             //Checking ally mobs, pushing
-            if (Player.Level <= 8)
+            if (player.Level > 8)
             {
-                return false;
+                var miniwave =
+                    ObjectManager.Get<Obj_AI_Minion>()
+                        .Where(
+                            m =>
+                                m.Distance(_GameInfo.SpawnPointEnemy) < 7000 &&
+                                Helpers.getAllyMobs(m.Position, 1200).Count >= 7)
+                        .OrderByDescending(m => m.Distance(_GameInfo.SpawnPointEnemy) < 7000)
+                        .ThenBy(m => m.Distance(player))
+                        .FirstOrDefault();
+                if (miniwave != null && Helpers.CheckPath(player.GetPath(miniwave.Position)) &&
+                    !CheckForRetreat(null, miniwave.Position) && CheckLaneClear(miniwave.Position))
+                {
+                    _GameInfo.MoveTo = miniwave.Position.Extend(player.Position, 200);
+                    return true;
+                }
             }
-            var miniWave =
-                ObjectManager.Get<Obj_AI_Minion>()
-                    .Where(
-                        m =>
-                        m.Distance(GameInfo.SpawnPointEnemy) < 7000 &&
-                        Helpers.GetAllyMobs(m.Position, 1200).Count >= 7)
-                    .OrderByDescending(m => m.Distance(GameInfo.SpawnPointEnemy) < 7000)
-                    .ThenBy(m => m.Distance(Player))
-                    .FirstOrDefault();
-            if (miniWave == null || !Helpers.CheckPath(Player.GetPath(miniWave.Position))
-                || CheckForRetreat(null, miniWave.Position) || !CheckLaneClear(miniWave.Position))
-            {
-                return false;
-            }
-            GameInfo.MoveTo = miniWave.Position.Extend(Player.Position, 200);
-            return true;
+            return false;
         }
 
         private static Vector3 GetMovePosition()
         {
-            switch (GameInfo.GameState)
+            switch (_GameInfo.GameState)
             {
                 case State.Retreat:
                     var enemyTurret =
                         ObjectManager.Get<Obj_AI_Turret>()
-                            .FirstOrDefault(t => t.IsEnemy && !t.IsDead && t.Distance(Player) < 2000);
+                            .FirstOrDefault(t => t.IsEnemy && !t.IsDead && t.Distance(player) < 2000);
                     var allyTurret =
                         ObjectManager.Get<Obj_AI_Turret>()
-                            .OrderBy(t => t.Distance(Player))
+                            .OrderBy(t => t.Distance(player))
                             .FirstOrDefault(
                                 t =>
-                                    t.IsAlly && !t.IsDead && t.Distance(Player) < 4000 &&
+                                    t.IsAlly && !t.IsDead && t.Distance(player) < 4000 &&
                                     t.CountEnemiesInRange(1200) == 0);
-                    if (GameInfo.AttackedByTurret && enemyTurret != null)
+                    var enemy = _GameInfo.Target;
+                    if (_GameInfo.AttackedByTurret && enemyTurret != null)
                     {
                         if (allyTurret != null)
                         {
                             return allyTurret.Position;
                         }
-                        var nextPost = Prediction.GetPrediction(Player, 1);
-                        return !nextPost.UnitPosition.UnderTurret(true) ? nextPost.CastPosition : GameInfo.SpawnPoint;
+                        var nextPost = Prediction.GetPrediction(player, 1);
+                        if (!nextPost.UnitPosition.UnderTurret(true))
+                        {
+                            return nextPost.CastPosition;
+                        }
+                        else
+                        {
+                            return _GameInfo.SpawnPoint;
+                        }
                     }
-                    if (allyTurret != null && Player.Distance(GameInfo.SpawnPoint) > Player.Distance(allyTurret))
+                    if (allyTurret != null && player.Distance(_GameInfo.SpawnPoint) > player.Distance(allyTurret))
                     {
-                        return allyTurret.Position.Extend(GameInfo.SpawnPoint, 300);
+                        return allyTurret.Position.Extend(_GameInfo.SpawnPoint, 300);
                     }
-                    return GameInfo.SpawnPoint;
+                    return _GameInfo.SpawnPoint;
+                    break;
                 case State.Objective:
-                    return GameInfo.MoveTo;
+                    return _GameInfo.MoveTo;
+                    break;
                 case State.Grouping:
-                    return GameInfo.MoveTo;
+                    return _GameInfo.MoveTo;
+                    break;
                 case State.Defending:
                     return Vector3.Zero;
+                    break;
                 case State.Pushing:
                     return Vector3.Zero;
+                    break;
                 case State.Warding:
-                    return GameInfo.MoveTo;
+                    return _GameInfo.MoveTo;
+                    break;
                 case State.FightIng:
                     return Vector3.Zero;
+                    break;
                 case State.Ganking:
-                    return GameInfo.MoveTo;
+                    return _GameInfo.MoveTo;
+                    break;
                 case State.Jungling:
                     return Vector3.Zero;
+                    break;
                 case State.LaneClear:
                     return Vector3.Zero;
+                    break;
                 default:
-                    var nextMob = GetNextMob();
+                    MonsterInfo nextMob = GetNextMob();
                     if (nextMob != null)
                     {
                         return nextMob.Position;
                     }
-                    var firstOrDefault = GameInfo.MonsterList.FirstOrDefault(m => m.Index == 1);
+                    var firstOrDefault = _GameInfo.MonsterList.FirstOrDefault(m => m.Index == 1);
                     if (firstOrDefault != null)
                     {
                         return firstOrDefault.Position;
@@ -1030,33 +1053,33 @@ namespace AutoJungle
 
             if (Debug)
             {
-                Console.WriteLine(@"GetMovePosition: Can't get Position");
+                Console.WriteLine("GetMovePosition: Can't get Position");
             }
             return Vector3.Zero;
         }
 
         private static MonsterInfo GetNextMob()
         {
-            MonsterInfo nextMob;
-            if (!Menu.Item("EnemyJungle").GetValue<Boolean>())
+            MonsterInfo nextMob = null;
+            if (!menu.Item("EnemyJungle").GetValue<Boolean>())
             {
-                if (Player.Team == GameObjectTeam.Chaos)
+                if (player.Team == GameObjectTeam.Chaos)
                 {
                     nextMob =
-                        GameInfo.MonsterList.OrderBy(m => m.Index)
-                            .FirstOrDefault(m => m.Index == GameInfo.CurrentMonster && !m.Id.Contains("bteam"));
+                        _GameInfo.MonsterList.OrderBy(m => m.Index)
+                            .FirstOrDefault(m => m.Index == _GameInfo.CurrentMonster && !m.ID.Contains("bteam"));
                 }
                 else
                 {
                     nextMob =
-                        GameInfo.MonsterList.OrderBy(m => m.Index)
-                            .FirstOrDefault(m => m.Index == GameInfo.CurrentMonster && !m.Id.Contains("pteam"));
+                        _GameInfo.MonsterList.OrderBy(m => m.Index)
+                            .FirstOrDefault(m => m.Index == _GameInfo.CurrentMonster && !m.ID.Contains("pteam"));
                 }
             }
             else
             {
                 nextMob =
-                    GameInfo.MonsterList.OrderBy(m => m.Index).FirstOrDefault(m => m.Index == GameInfo.CurrentMonster);
+                    _GameInfo.MonsterList.OrderBy(m => m.Index).FirstOrDefault(m => m.Index == _GameInfo.CurrentMonster);
             }
             return nextMob;
         }
@@ -1066,84 +1089,84 @@ namespace AutoJungle
             if (Environment.TickCount - ResetTimer > 1200)
             {
                 ResetTimer = Environment.TickCount;
-                GameInfo.DamageTaken = 0f;
-                GameInfo.DamageCount = 0;
+                _GameInfo.DamageTaken = 0f;
+                _GameInfo.DamageCount = 0;
             }
-            if (GameInfo.CurrentMonster == 13 && Player.Level <= 9)
+            if (_GameInfo.CurrentMonster == 13 && player.Level <= 9)
             {
-                GameInfo.CurrentMonster++;
+                _GameInfo.CurrentMonster++;
             }
-            if (GameInfo.CurrentMonster > 16)
+            if (_GameInfo.CurrentMonster > 16)
             {
-                GameInfo.CurrentMonster = 1;
+                _GameInfo.CurrentMonster = 1;
             }
         }
 
         private static bool ShouldRecall()
         {
-            if (Player.HealthPercent <= Menu.Item("HealtToBack").GetValue<Slider>().Value)
+            if (player.HealthPercent <= menu.Item("HealtToBack").GetValue<Slider>().Value)
             {
                 if (Debug)
                 {
-                    Console.WriteLine(@"ShouldRecall: Low Health - true");
+                    Console.WriteLine("ShouldRecall: Low Health - true");
                 }
                 return true;
             }
-            if (GameInfo.CanBuyItem())
+            if (_GameInfo.CanBuyItem())
             {
                 if (Debug)
                 {
-                    Console.WriteLine(@"ShouldRecall: Can buy item - true");
+                    Console.WriteLine("ShouldRecall: Can buy item - true");
                 }
                 return true;
             }
-            if (Helpers.GetMobs(GameInfo.SpawnPoint, 5000).Count > 6)
+            if (Helpers.getMobs(_GameInfo.SpawnPoint, 5000).Count > 6)
             {
                 if (Debug)
                 {
-                    Console.WriteLine(@"ShouldRecall: Def base - true");
+                    Console.WriteLine("ShouldRecall: Def base - true");
                 }
                 return true;
             }
-            if (GameInfo.GameState == State.Retreat && Player.CountEnemiesInRange(GameInfo.ChampionRange) == 0)
+            if (_GameInfo.GameState == State.Retreat && player.CountEnemiesInRange(GameInfo.ChampionRange) == 0)
             {
                 if (Debug)
                 {
-                    Console.WriteLine(@"ShouldRecall: After retreat - true");
+                    Console.WriteLine("ShouldRecall: After retreat - true");
                 }
                 return true;
             }
             if (Debug)
             {
-                Console.WriteLine(@"ShouldRecall: End - false");
+                Console.WriteLine("ShouldRecall: End - false");
             }
             return false;
         }
 
         private static bool WaitOnFountain()
         {
-            if (!Player.InFountain())
+            if (!player.InFountain())
             {
                 return false;
             }
-            if (Player.InFountain() && Player.IsRecalling())
+            if (player.InFountain() && player.IsRecalling())
             {
                 return false;
             }
-            if (!(Player.HealthPercent < 90) && (!(Player.ManaPercent < 90) || !(Player.MaxMana > 100)))
+            if (player.HealthPercent < 90 || (player.ManaPercent < 90 && player.MaxMana > 100))
             {
-                return false;
+                if (player.IsMoving)
+                {
+                    player.IssueOrder(GameObjectOrder.HoldPosition, player.Position);
+                }
+                return true;
             }
-            if (Player.IsMoving)
-            {
-                Player.IssueOrder(GameObjectOrder.HoldPosition, Player.Position);
-            }
-            return true;
+            return false;
         }
 
         private static bool ShouldSkipUpdate()
         {
-            if (!Menu.Item("Enabled").GetValue<Boolean>())
+            if (!menu.Item("Enabled").GetValue<Boolean>())
             {
                 return true;
             }
@@ -1151,11 +1174,11 @@ namespace AutoJungle
             {
                 return true;
             }
-            if (Player.IsDead)
+            if (player.IsDead)
             {
                 return true;
             }
-            if (Player.IsRecalling() && !Player.InFountain())
+            if (player.IsRecalling() && !player.InFountain())
             {
                 return true;
             }
@@ -1163,7 +1186,10 @@ namespace AutoJungle
             return false;
         }
 
-        public static bool Debug => Menu.Item("debug").GetValue<KeyBind>().Active;
+        public static bool Debug
+        {
+            get { return menu.Item("debug").GetValue<KeyBind>().Active; }
+        }
 
         #endregion
 
@@ -1171,68 +1197,65 @@ namespace AutoJungle
 
         #region Events
 
-        private static void GameProcessSpell(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private static void Game_ProcessSpell(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            var target = args.Target as Obj_AI_Hero;
-            if (target == null)
+            Obj_AI_Hero target = args.Target as Obj_AI_Hero;
+            if (target != null)
             {
-                return;
+                if (target.IsMe && sender.IsValid && !sender.IsDead && sender.IsEnemy && target.IsValid)
+                {
+                    if (Orbwalking.IsAutoAttack(args.SData.Name))
+                    {
+                        _GameInfo.DamageTaken += (float) sender.GetAutoAttackDamage(player, true);
+                        _GameInfo.DamageCount++;
+                    }
+                    if (sender is Obj_AI_Turret && !_GameInfo.AttackedByTurret)
+                    {
+                        _GameInfo.AttackedByTurret = true;
+                        Utility.DelayAction.Add(2000, () => _GameInfo.AttackedByTurret = false);
+                    }
+                }
             }
-            if (!target.IsMe || !sender.IsValid || sender.IsDead || !sender.IsEnemy || !target.IsValid)
-            {
-                return;
-            }
-            if (Orbwalking.IsAutoAttack(args.SData.Name))
-            {
-                GameInfo.DamageTaken += (float) sender.GetAutoAttackDamage(Player, true);
-                GameInfo.DamageCount++;
-            }
-            if (!(sender is Obj_AI_Turret) || GameInfo.AttackedByTurret)
-            {
-                return;
-            }
-            GameInfo.AttackedByTurret = true;
-            Utility.DelayAction.Add(2000, () => GameInfo.AttackedByTurret = false);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
             if (Debug)
             {
-                if (Pos.IsValid())
+                if (pos.IsValid())
                 {
-                    Render.Circle.DrawCircle(Pos, 50, Color.Crimson, 7);
+                    Render.Circle.DrawCircle(pos, 50, Color.Crimson, 7);
                 }
 
-                foreach (var m in Helpers.Mod)
+                foreach (var m in Helpers.mod)
                 {
                     Render.Circle.DrawCircle(m, 50, Color.Crimson, 7);
                 }
 
-                if (GameInfo.LastClick.IsValid())
+                if (_GameInfo.LastClick.IsValid())
                 {
-                    Render.Circle.DrawCircle(GameInfo.LastClick, 70, Color.Blue, 7);
+                    Render.Circle.DrawCircle(_GameInfo.LastClick, 70, Color.Blue, 7);
                 }
-                if (GameInfo.MoveTo.IsValid())
+                if (_GameInfo.MoveTo.IsValid())
                 {
-                    Render.Circle.DrawCircle(GameInfo.MoveTo, 77, Color.BlueViolet, 7);
+                    Render.Circle.DrawCircle(_GameInfo.MoveTo, 77, Color.BlueViolet, 7);
                 }
-                foreach (var e in GameInfo.EnemyStructures)
+                foreach (var e in _GameInfo.EnemyStructures)
                 {
                     Render.Circle.DrawCircle(e, 300, Color.Red, 7);
                 }
-                foreach (var a in GameInfo.AllyStructures)
+                foreach (var a in _GameInfo.AllyStructures)
                 {
                     Render.Circle.DrawCircle(a, 300, Color.DarkGreen, 7);
                 }
-                if (GameInfo.ClosestWardPos.IsValid())
+                if (_GameInfo.ClosestWardPos.IsValid())
                 {
-                    Render.Circle.DrawCircle(GameInfo.ClosestWardPos, 70, Color.LawnGreen, 7);
+                    Render.Circle.DrawCircle(_GameInfo.ClosestWardPos, 70, Color.LawnGreen, 7);
                 }
             }
-            if (Menu.Item("State").GetValue<Boolean>())
+            if (menu.Item("State").GetValue<Boolean>())
             {
-                Drawing.DrawText(150f, 200f, Color.Aqua, GameInfo.GameState.ToString());
+                Drawing.DrawText(150f, 200f, Color.Aqua, _GameInfo.GameState.ToString());
             }
         }
 
@@ -1240,7 +1263,7 @@ namespace AutoJungle
         {
             if (sender.IsMe)
             {
-                GameInfo.LastClick = args.Path.Last();
+                _GameInfo.LastClick = args.Path.Last();
             }
         }
 
@@ -1248,9 +1271,9 @@ namespace AutoJungle
         {
             try
             {
-                var index = Languages.ToList().IndexOf(onValueChangeEventArgs.GetNewValue<StringList>().SelectedValue);
-                File.WriteAllText(Path + FileName, LanguagesShort[index], Encoding.Default);
-                Console.WriteLine(@"Changed to " + LanguagesShort[index]);
+                var index = languages.ToList().IndexOf(onValueChangeEventArgs.GetNewValue<StringList>().SelectedValue);
+                File.WriteAllText(path + fileName, languagesShort[index], Encoding.Default);
+                Console.WriteLine("Changed to " + languagesShort[index]);
             }
             catch (Exception e)
             {
@@ -1262,169 +1285,167 @@ namespace AutoJungle
 
         #region Init
 
-        private static void Main()
+        private static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += OnGameLoad;
         }
 
         private static void OnGameLoad(EventArgs args)
         {
+            player = ObjectManager.Player;
+            _GameInfo = new GameInfo();
             SetCulture();
             if (Game.MapId != GameMapId.SummonersRift)
             {
-                Game.PrintChat(ResourceM.GetString("MapNotSupported"));
+                Game.PrintChat(resourceM.GetString("MapNotSupported"));
                 return;
             }
-            GameInfo.Champdata = new Champdata();
-            if (GameInfo.Champdata.Hero == null)
+            _GameInfo.Champdata = new Champdata();
+            if (_GameInfo.Champdata.Hero == null)
             {
-                Game.PrintChat(ResourceM.GetString("ChampNotSupported"));
+                Game.PrintChat(resourceM.GetString("ChampNotSupported"));
                 return;
             }
-            Jungle.SetSmiteSlot();
-            if (Jungle.SmiteSlot == SpellSlot.Unknown)
+            Jungle.setSmiteSlot();
+            if (Jungle.smiteSlot == SpellSlot.Unknown)
             {
-                Console.WriteLine(@"Items: ");
-                foreach (var i in Player.InventoryItems)
+                Console.WriteLine("Items: ");
+                foreach (var i in player.InventoryItems)
                 {
-                    Console.WriteLine(@"	 Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
+                    Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
                 }
-                Game.PrintChat(ResourceM.GetString("NoSmite"));
+                Game.PrintChat(resourceM.GetString("NoSmite"));
                 return;
             }
 
-            ItemHandler = new ItemHandler(GameInfo.Champdata.Type);
+            ItemHandler = new ItemHandler(_GameInfo.Champdata.Type);
             CreateMenu();
-
             Game.OnUpdate += Game_OnGameUpdate;
-            Obj_AI_Base.OnProcessSpellCast += GameProcessSpell;
+            Obj_AI_Base.OnProcessSpellCast += Game_ProcessSpell;
             Drawing.OnDraw += Drawing_OnDraw;
             Obj_AI_Base.OnNewPath += Obj_AI_Base_OnNewPath;
             Game.OnEnd += Game_OnEnd;
-            GameObject.OnDelete += Obj_AI_Base_OnDelete;
+            Obj_AI_Base.OnDelete += Obj_AI_Base_OnDelete;
         }
 
         private static void SetCulture()
         {
             try
             {
-                Path = string.Format(@"{0}\AutoJ\", Config.AppDataDirectory);
-                FileName = "Lang.txt";
-                if (!Directory.Exists(Path))
+                path = string.Format(@"{0}\AutoJ\", Config.AppDataDirectory);
+                fileName = "Lang.txt";
+                if (!Directory.Exists(path))
                 {
-                    Directory.CreateDirectory(Path);
+                    Directory.CreateDirectory(path);
                 }
-                if (!File.Exists(Path + FileName))
+                if (!File.Exists(path + fileName))
                 {
-                    File.AppendAllText(Path + FileName, @"en", Encoding.Default);
-                    ResourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
-                    Console.WriteLine(@"First start, lang is English");
+                    File.AppendAllText(path + fileName, "en", Encoding.Default);
+                    resourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
+                    Console.WriteLine("First start, lang is English");
                 }
                 else
                 {
-                    Culture = File.ReadLines(Path + FileName).First();
-                    Console.WriteLine(Culture);
-                    ResourceM = new ResourceManager("AutoJungle.Resource." + Culture, typeof(Program).Assembly);
-                    Console.WriteLine(@"Lang set to " + Culture);
+                    culture = File.ReadLines(path + fileName).First();
+                    Console.WriteLine(culture);
+                    resourceM = new ResourceManager("AutoJungle.Resource." + culture, typeof(Program).Assembly);
+                    Console.WriteLine("Lang set to " + culture);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ResourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
+                resourceM = new ResourceManager("AutoJungle.Resource.en", typeof(Program).Assembly);
             }
         }
 
         private static void Obj_AI_Base_OnDelete(GameObject sender, EventArgs args)
         {
-            if (!(sender.Position.Distance(Player.Position) < 600))
+            if (sender.Position.Distance(player.Position) < 600)
             {
-                return;
-            }
-            var closest = GameInfo.MonsterList.FirstOrDefault(m => m.Position.Distance(sender.Position) < 600);
-            if (closest == null || GameInfo.GameState != State.Jungling
-                || Helpers.GetMobs(sender.Position, 600).Count(m => !m.IsDead) != 0)
-            {
-                return;
-            }
-            if (Environment.TickCount - closest.TimeAtDead > closest.RespawnTime)
-            {
-                closest.TimeAtDead = Environment.TickCount;
+                var closest = _GameInfo.MonsterList.FirstOrDefault(m => m.Position.Distance(sender.Position) < 600);
+                if (closest != null && _GameInfo.GameState == State.Jungling &&
+                    Helpers.getMobs(sender.Position, 600).Where(m => !m.IsDead).Count() == 0)
+                {
+                    if (Environment.TickCount - closest.TimeAtDead > closest.RespawnTime)
+                    {
+                        closest.TimeAtDead = Environment.TickCount;
+                    }
+                }
             }
         }
 
         private static void Game_OnEnd(GameEndEventArgs args)
         {
-            if (!Menu.Item("AutoClose").GetValue<Boolean>())
+            if (menu.Item("AutoClose").GetValue<Boolean>())
             {
-                return;
+                Console.WriteLine("END");
+                Thread.Sleep(Random.Next(10000, 13000));
+                Game.Quit();
             }
-            Console.WriteLine(@"END");
-            Thread.Sleep(Random.Next(10000, 13000));
-            Game.Quit();
         }
 
         private static void CreateMenu()
         {
-            Menu = new Menu(ResourceM.GetString("AutoJungle"), "AutoJungle", true);
+            menu = new Menu(resourceM.GetString("AutoJungle"), "AutoJungle", true);
 
-            var menuD = new Menu(ResourceM.GetString("dsettings"), "dsettings");
-            menuD.AddItem(new MenuItem("debug", ResourceM.GetString("debug")))
+            Menu menuD = new Menu(resourceM.GetString("dsettings"), "dsettings");
+            menuD.AddItem(new MenuItem("debug", resourceM.GetString("debug")))
                 .SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press))
                 .SetFontStyle(FontStyle.Bold, SharpDX.Color.Orange);
-            menuD.AddItem(new MenuItem("State", ResourceM.GetString("State"))).SetValue(false);
-            Menu.AddSubMenu(menuD);
-            var menuJ = new Menu(ResourceM.GetString("jsettings"), "jsettings");
+            menuD.AddItem(new MenuItem("State", resourceM.GetString("State"))).SetValue(false);
+            menu.AddSubMenu(menuD);
+            Menu menuJ = new Menu(resourceM.GetString("jsettings"), "jsettings");
             menuJ.AddItem(
-                new MenuItem("HealtToBack", ResourceM.GetString("HealtToBack")).SetValue(new Slider(35)));
+                new MenuItem("HealtToBack", resourceM.GetString("HealtToBack")).SetValue(new Slider(35, 0, 100)));
             menuJ.AddItem(
-                new MenuItem("HealthToPotion", ResourceM.GetString("HealthToPotion")).SetValue(new Slider(40)));
-            menuJ.AddItem(new MenuItem("UseTrinket", ResourceM.GetString("UseTrinket"))).SetValue(true);
-            menuJ.AddItem(new MenuItem("EnemyJungle", ResourceM.GetString("EnemyJungle"))).SetValue(true);
-            Menu.AddSubMenu(menuJ);
-            var menuG = new Menu(ResourceM.GetString("dsettings"), "gsettings");
-            menuG.AddItem(new MenuItem("GankLevel", ResourceM.GetString("GankLevel")).SetValue(new Slider(5, 1, 18)));
+                new MenuItem("HealthToPotion", resourceM.GetString("HealthToPotion")).SetValue(new Slider(55, 0, 100)));
+            menuJ.AddItem(new MenuItem("UseTrinket", resourceM.GetString("UseTrinket"))).SetValue(true);
+            menuJ.AddItem(new MenuItem("EnemyJungle", resourceM.GetString("EnemyJungle"))).SetValue(true);
+            menu.AddSubMenu(menuJ);
+            Menu menuG = new Menu(resourceM.GetString("dsettings"), "gsettings");
+            menuG.AddItem(new MenuItem("GankLevel", resourceM.GetString("GankLevel")).SetValue(new Slider(5, 1, 18)));
             menuG.AddItem(
-                new MenuItem("GankFrequency", ResourceM.GetString("GankFrequency")).SetValue(new Slider(100)));
+                new MenuItem("GankFrequency", resourceM.GetString("GankFrequency")).SetValue(new Slider(100, 0, 100)));
             menuG.AddItem(
-                new MenuItem("GankRange", ResourceM.GetString("GankRange")).SetValue(new Slider(7000, 0, 20000)));
-            menuG.AddItem(new MenuItem("ComboSmite", ResourceM.GetString("ComboSmite"))).SetValue(true);
-            Menu.AddSubMenu(menuG);
-            Menu.AddItem(new MenuItem("Enabled", ResourceM.GetString("Enabled"))).SetValue(true);
-            Menu.AddItem(new MenuItem("AutoClose", ResourceM.GetString("AutoClose"))).SetValue(true);
-            var menuChamps = new Menu(ResourceM.GetString("supported"), "supported");
-            menuChamps.AddItem(new MenuItem("supportedYi", ResourceM.GetString("supportedYi")));
-            menuChamps.AddItem(new MenuItem("supportedWarwick", ResourceM.GetString("supportedWarwick")));
-            menuChamps.AddItem(new MenuItem("supportedShyvana", ResourceM.GetString("supportedShyvana")));
-            menuChamps.AddItem(new MenuItem("supportedJax", ResourceM.GetString("supportedJax")));
-            menuChamps.AddItem(new MenuItem("supportedXinZhao", ResourceM.GetString("supportedXinZhao")));
-            menuChamps.AddItem(new MenuItem("supportedNocturne", ResourceM.GetString("supportedNocturne")));
-            menuChamps.AddItem(new MenuItem("supportedEvelyn", ResourceM.GetString("supportedEvelyn")));
-            menuChamps.AddItem(new MenuItem("supportedVolibear", ResourceM.GetString("supportedVolibear")));
-            menuChamps.AddItem(new MenuItem("supportedTryndamere", ResourceM.GetString("supportedTryndamere")));
+                new MenuItem("GankRange", resourceM.GetString("GankRange")).SetValue(new Slider(7000, 0, 20000)));
+            menuG.AddItem(new MenuItem("ComboSmite", resourceM.GetString("ComboSmite"))).SetValue(true);
+            menu.AddSubMenu(menuG);
+            menu.AddItem(new MenuItem("Enabled", resourceM.GetString("Enabled"))).SetValue(true);
+            menu.AddItem(new MenuItem("AutoClose", resourceM.GetString("AutoClose"))).SetValue(true);
+            Menu menuChamps = new Menu(resourceM.GetString("supported"), "supported");
+            menuChamps.AddItem(new MenuItem("supportedYi", resourceM.GetString("supportedYi")));
+            menuChamps.AddItem(new MenuItem("supportedWarwick", resourceM.GetString("supportedWarwick")));
+            menuChamps.AddItem(new MenuItem("supportedShyvana", resourceM.GetString("supportedShyvana")));
+            menuChamps.AddItem(new MenuItem("supportedJax", resourceM.GetString("supportedJax")));
+            menuChamps.AddItem(new MenuItem("supportedXinZhao", resourceM.GetString("supportedXinZhao")));
+            menuChamps.AddItem(new MenuItem("supportedNocturne", resourceM.GetString("supportedNocturne")));
+            menuChamps.AddItem(new MenuItem("supportedEvelyn", resourceM.GetString("supportedEvelyn")));
+            menuChamps.AddItem(new MenuItem("supportedVolibear", resourceM.GetString("supportedVolibear")));
+            menuChamps.AddItem(new MenuItem("supportedTryndamere", resourceM.GetString("supportedTryndamere")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
-            Menu.AddSubMenu(menuChamps);
+            menu.AddSubMenu(menuChamps);
 
-            var menuLang = new Menu(ResourceM.GetString("lsetting"), "lsetting");
+            Menu menuLang = new Menu(resourceM.GetString("lsetting"), "lsetting");
             menuLang.AddItem(
-                new MenuItem("Language", ResourceM.GetString("Language")).SetValue(new StringList(Languages)));
+                new MenuItem("Language", resourceM.GetString("Language")).SetValue(new StringList(languages, 0)));
             menuLang.AddItem(
-                new MenuItem("AutoJungleInfoReload", ResourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
+                new MenuItem("AutoJungleInfoReload", resourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
                     FontStyle.Bold, SharpDX.Color.Red));
-            Menu.AddSubMenu(menuLang);
-            Menu.AddItem(
+            menu.AddSubMenu(menuLang);
+            menu.AddItem(
                 new MenuItem(
                     "AutoJungleInfo2",
-                    ResourceM.GetString("AutoJungleInfo2") +
+                    resourceM.GetString("AutoJungleInfo2") +
                     Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", ".")).SetFontStyle(
-                        FontStyle.Bold, SharpDX.Color.Orange));
+                        FontStyle.Bold, SharpDX.Color.Green));
             /*menu.AddItem(
                 new MenuItem("AutoJungleInfo3", resourceM.GetString("AutoJungleInfo3")).SetFontStyle(
                     FontStyle.Bold, SharpDX.Color.Purple));*/
 
-            Menu.AddToMainMenu();
-            Menu.Item("Language").ValueChanged += OnValueChanged;
+            menu.AddToMainMenu();
+            menu.Item("Language").ValueChanged += OnValueChanged;
         }
 
         #endregion

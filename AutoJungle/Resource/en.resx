@@ -124,10 +124,10 @@
     <value>S7-AutoJungle</value>
   </data>
   <data name="AutoJungleInfo2" xml:space="preserve">
-    <value>Soresu | Updated by LOVETAIWAN </value>
+    <value>Soresu | Updated by LOVETAIWAN v</value>
   </data>
   <data name="HealthToPotion" xml:space="preserve">
-    <value>HP% to use potion</value>
+    <value>Use Potion on HP(%)</value>
   </data>
   <data name="AutoJungleInfoReload" xml:space="preserve">
     <value>You have to reload the assembly (F5)!</value>

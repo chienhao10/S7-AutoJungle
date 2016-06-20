@@ -15,146 +15,146 @@ namespace AutoJungle.Data
 
         public static MonsterInfo Baron = new MonsterInfo
         {
-            Id = "Baron",
+            ID = "Baron",
             Position = new Vector3(4910f, 10268f, -71.24f),
-            Name = "SRU_BaronSpawn",
+            name = "SRU_BaronSpawn",
             Index = 100,
             RespawnTime = 420
         };
 
         public static MonsterInfo Dragon = new MonsterInfo
         {
-            Id = "Dragon",
+            ID = "Dragon",
             Position = new Vector3(9836f, 4408f, -71.24f),
-            Name = "SRU_Dragon",
+            name = "SRU_Dragon",
             RespawnTime = 360
         };
 
-        public static MonsterInfo TopCrab = new MonsterInfo
+        public static MonsterInfo top_crab = new MonsterInfo
         {
-            Id = "top_crab",
+            ID = "top_crab",
             Position = new Vector3(4266f, 9634f, -67.87f),
-            Name = "Sru_Crab",
+            name = "Sru_Crab",
             RespawnTime = 180
         };
 
-        public static MonsterInfo BlueMid = new MonsterInfo
+        public static MonsterInfo BLUE_MID = new MonsterInfo
         {
-            Id = "blue_MID",
+            ID = "blue_MID",
             Position = new Vector3(5294.531f, 5537.924f, 50.46155f),
-            Name = "noneuses",
+            name = "noneuses",
             RespawnTime = 0
         };
 
-        public static MonsterInfo PurpleMid = new MonsterInfo
+        public static MonsterInfo PURPLE_MID = new MonsterInfo
         {
-            Id = "purple_MID",
+            ID = "purple_MID",
             Position = new Vector3(9443.35f, 9339.06f, 53.30994f),
-            Name = "noneuses",
+            name = "noneuses",
             RespawnTime = 0
         };
 
-        public static MonsterInfo DownCrab = new MonsterInfo
+        public static MonsterInfo down_crab = new MonsterInfo
         {
-            Id = "down_crab",
+            ID = "down_crab",
             Position = new Vector3(10524f, 5116f, -62.81f),
-            Name = "Sru_Crab",
+            name = "Sru_Crab",
             RespawnTime = 180
         };
 
-        public static MonsterInfo BteamRazorbeak = new MonsterInfo
+        public static MonsterInfo bteam_Razorbeak = new MonsterInfo
         {
-            Id = "bteam_Razorbeak",
+            ID = "bteam_Razorbeak",
             Position = new Vector3(6974f, 5460f, 54f),
-            Name = "SRU_Razorbeak",
+            name = "SRU_Razorbeak",
             RespawnTime = 100
         };
 
-        public static MonsterInfo BteamRed = new MonsterInfo
+        public static MonsterInfo bteam_Red = new MonsterInfo
         {
-            Id = "bteam_Red",
+            ID = "bteam_Red",
             Position = new Vector3(7796f, 4028f, 54f),
-            Name = "SRU_Red",
+            name = "SRU_Red",
             RespawnTime = 300
         };
 
-        public static MonsterInfo BteamKrug = new MonsterInfo
+        public static MonsterInfo bteam_Krug = new MonsterInfo
         {
-            Id = "bteam_Krug",
+            ID = "bteam_Krug",
             Position = new Vector3(8394f, 2750f, 50f),
-            Name = "SRU_Krug",
+            name = "SRU_Krug",
             RespawnTime = 100
         };
 
-        public static MonsterInfo BteamBlue = new MonsterInfo
+        public static MonsterInfo bteam_Blue = new MonsterInfo
         {
-            Id = "bteam_Blue",
+            ID = "bteam_Blue",
             Position = new Vector3(3832f, 7996f, 52f),
-            Name = "SRU_Blue",
+            name = "SRU_Blue",
             RespawnTime = 300
         };
 
-        public static MonsterInfo BteamGromp = new MonsterInfo
+        public static MonsterInfo bteam_Gromp = new MonsterInfo
         {
-            Id = "bteam_Gromp",
+            ID = "bteam_Gromp",
             Position = new Vector3(2112f, 8372f, 51.7f),
-            Name = "SRU_Gromp",
+            name = "SRU_Gromp",
             RespawnTime = 100
         };
 
-        public static MonsterInfo BteamWolf = new MonsterInfo
+        public static MonsterInfo bteam_Wolf = new MonsterInfo
         {
-            Id = "bteam_Wolf",
+            ID = "bteam_Wolf",
             Position = new Vector3(3844f, 6474f, 52.46f),
-            Name = "SRU_Murkwolf",
+            name = "SRU_Murkwolf",
             RespawnTime = 100
         };
 
-        public static MonsterInfo PteamRazorbeak = new MonsterInfo
+        public static MonsterInfo pteam_Razorbeak = new MonsterInfo
         {
-            Id = "pteam_Razorbeak",
+            ID = "pteam_Razorbeak",
             Position = new Vector3(7856f, 9492f, 52.33f),
-            Name = "SRU_Razorbeak",
+            name = "SRU_Razorbeak",
             RespawnTime = 100
         };
 
-        public static MonsterInfo PteamRed = new MonsterInfo
+        public static MonsterInfo pteam_Red = new MonsterInfo
         {
-            Id = "pteam_Red",
+            ID = "pteam_Red",
             Position = new Vector3(7124f, 10856f, 56.34f),
-            Name = "SRU_Red",
+            name = "SRU_Red",
             RespawnTime = 300
         };
 
-        public static MonsterInfo PteamKrug = new MonsterInfo
+        public static MonsterInfo pteam_Krug = new MonsterInfo
         {
-            Id = "pteam_Krug",
+            ID = "pteam_Krug",
             Position = new Vector3(6495f, 12227f, 56.47f),
-            Name = "SRU_Krug",
+            name = "SRU_Krug",
             RespawnTime = 100
         };
 
-        public static MonsterInfo PteamBlue = new MonsterInfo
+        public static MonsterInfo pteam_Blue = new MonsterInfo
         {
-            Id = "pteam_Blue",
+            ID = "pteam_Blue",
             Position = new Vector3(10850f, 6938f, 51.72f),
-            Name = "SRU_Blue",
+            name = "SRU_Blue",
             RespawnTime = 300
         };
 
-        public static MonsterInfo PteamGromp = new MonsterInfo
+        public static MonsterInfo pteam_Gromp = new MonsterInfo
         {
-            Id = "pteam_Gromp",
+            ID = "pteam_Gromp",
             Position = new Vector3(12766f, 6464f, 51.66f),
-            Name = "SRU_Gromp",
+            name = "SRU_Gromp",
             RespawnTime = 100
         };
 
-        public static MonsterInfo PteamWolf = new MonsterInfo
+        public static MonsterInfo pteam_Wolf = new MonsterInfo
         {
-            Id = "pteam_Wolf",
+            ID = "pteam_Wolf",
             Position = new Vector3(10958f, 8286f, 62.46f),
-            Name = "SRU_Murkwolf",
+            name = "SRU_Murkwolf",
             RespawnTime = 100
         };
 
@@ -164,8 +164,8 @@ namespace AutoJungle.Data
     public class MonsterInfo
     {
         public Vector3 Position;
-        public string Id;
-        public string Name;
+        public string ID;
+        public string name;
         public int Team;
         public int Index;
         public int RespawnTime;
@@ -173,18 +173,22 @@ namespace AutoJungle.Data
 
         public MonsterInfo(MonsterInfo baseInfo, int index)
         {
-            this.Position = baseInfo.Position;
-            this.Id = baseInfo.Id;
-            this.Name = baseInfo.Name;
-            this.Team = baseInfo.Team;
-            this.Index = index;
-            this.RespawnTime = baseInfo.RespawnTime;
-            this.TimeAtDead = 0f;
+            Position = baseInfo.Position;
+            ID = baseInfo.ID;
+            name = baseInfo.name;
+            Team = baseInfo.Team;
+            Index = index;
+            RespawnTime = baseInfo.RespawnTime;
+            TimeAtDead = 0f;
         }
 
         public bool IsAlive(int time = 0)
         {
-            return (Environment.TickCount - this.TimeAtDead) / 1000 > this.RespawnTime - time;
+            if ((Environment.TickCount - TimeAtDead) / 1000 > RespawnTime - time)
+            {
+                return true;
+            }
+            return false;
         }
 
         public MonsterInfo() {}
