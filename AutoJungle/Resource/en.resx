@@ -213,6 +213,9 @@
   <data name="supportedYi" xml:space="preserve">
     <value>Master Yi</value>
   </data>
+  <data name="supportedOlaf" xml:space="preserve">
+    <value>Olaf</value>
+  </data>
   <data name="UseTrinket" xml:space="preserve">
     <value>Use Trinket</value>
   </data>

@@ -1423,6 +1423,7 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedEvelyn", resourceM.GetString("supportedEvelyn")));
             menuChamps.AddItem(new MenuItem("supportedVolibear", resourceM.GetString("supportedVolibear")));
             menuChamps.AddItem(new MenuItem("supportedTryndamere", resourceM.GetString("supportedTryndamere")));
+            menuChamps.AddItem(new MenuItem("supportedOlaf", resourceM.GetString("supportedOlaf")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);

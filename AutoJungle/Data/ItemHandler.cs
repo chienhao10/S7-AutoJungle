@@ -41,6 +41,9 @@ namespace AutoJungle.Data
                 case BuildType.YI:
                     SetlistYI();
                     break;
+                case BuildType.Bro:
+                    SetlistBro();
+                    break;
             }
         }
 
@@ -89,6 +92,31 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(16, (int) ItemId.Manamune, "Ravenous Hydra Melee Only", 1650));
             ItemList.Add(new BuyingOrder(17, (int) ItemId.Zeal, "Zeal", 1300));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Phantom_Dancer, "Phantom Dancer", 1500));
+        }
+
+        private void SetlistBro()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "打野刀", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 3751, "直接合成打野", 1100));
+            ItemList.Add(new BuyingOrder(7, 1401, "Cinderhulk", 625));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 600));
+            ItemList.Add(new BuyingOrder(9, 1028, "Ruby Crystal", 400));
+            ItemList.Add(new BuyingOrder(10, 3044, "Phage", 950));
+            ItemList.Add(new BuyingOrder(11, 3133, "warhamm", 1100));
+            ItemList.Add(new BuyingOrder(12, 3071, "tbc", 750));
+            ItemList.Add(new BuyingOrder(13, 1031, "Chain Vest", 800));
+            ItemList.Add(new BuyingOrder(14, 3742, "Dead Man's Plate", 1800));
+            ItemList.Add(new BuyingOrder(15, 3009, "Boots of Swiftness", 600));
+            ItemList.Add(new BuyingOrder(16, 3052, "Jaurims Fist", 1300));
+            ItemList.Add(new BuyingOrder(17, 3077, "Tiamat", 1300));
+            ItemList.Add(new BuyingOrder(18, 3748, "Titanic Hydra", 1100));
+            ItemList.Add(new BuyingOrder(19, 3211, "Spectres Cow", 1200));
+            ItemList.Add(new BuyingOrder(20, 3065, "Spirit Visage", 1600));
+            ItemList.Add(new BuyingOrder(21, 2138, "Elixir of Iron", 500));
         }
 
         private void SetListAD()
@@ -329,6 +357,7 @@ namespace AutoJungle.Data
         APADT,
         VB,
         Manwang,
-        YI
+        YI,
+        Bro
     }
 }

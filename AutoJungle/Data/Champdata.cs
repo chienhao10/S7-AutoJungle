@@ -196,11 +196,98 @@ namespace AutoJungle
                     Combo = MWCombo;
                     Console.WriteLine("Tryndamere loaded");
                     break;
-                default:
+
+                case "Olaf":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.Bro;
+
+                    Q = new Spell(SpellSlot.Q, 1000);
+                    W = new Spell(SpellSlot.W);
+                    E = new Spell(SpellSlot.E, 325);
+                    R = new Spell(SpellSlot.R);
+
+                    Autolvl = new AutoLeveler(new int[] { 0, 1, 2, 0, 0, 3, 0, 2, 0, 2, 3, 2, 2, 1, 1, 3, 1, 1 });
+
+                    JungleClear = BroJungleClear;
+                    Combo = BroCombo;
+                    Console.WriteLine("Brolaf loaded");
+                    break;                default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
                 //nidale w buff?(优先）)nunu R check | sej，结束skr，amumu？ graves！
             }
+        }
+
+        private bool BroCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            if (Q.IsReady() && targetHero.IsValidTarget(1000))
+            {
+                Q.Cast(targetHero);
+            }
+            if (E.IsReady() && Hero.HealthPercent > 30 && targetHero.IsValidTarget(325))
+            {
+                E.Cast(targetHero);
+            }
+            ItemHandler.UseItemsCombo(targetHero, true);
+            if (W.IsReady() && targetHero.IsValidTarget(325))
+            {
+                W.Cast();
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
+        }
+
+        private bool BroJungleClear()
+        {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (Q.IsReady() && targetMob.IsValidTarget(325))
+            {
+                Q.Cast(targetMob);
+            }
+            ItemHandler.UseItemsJungle();
+            if (E.IsReady() && Hero.Distance(targetMob) < 300 &&
+                (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
+                if (Hero.HealthPercent > 45)
+            {
+                E.Cast(targetMob);
+            }
+            if (W.IsReady() && Hero.Distance(targetMob) < 300 &&
+                (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
+            {
+                if (Hero.Mana > Q.ManaCost + W.ManaCost || Hero.HealthPercent > 45)
+                {
+                    W.Cast();
+                }
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
         }
 
         private bool MWCombo()
