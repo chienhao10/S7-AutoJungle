@@ -211,11 +211,100 @@ namespace AutoJungle
                     JungleClear = BroJungleClear;
                     Combo = BroCombo;
                     Console.WriteLine("Brolaf loaded");
-                    break;                default:
+                    break;
+
+                case "Nunu":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.Nu;
+
+                    Q = new Spell(SpellSlot.Q, 1000);
+                    W = new Spell(SpellSlot.W);
+                    E = new Spell(SpellSlot.E, 325);
+                    R = new Spell(SpellSlot.R);
+
+                    Autolvl = new AutoLeveler(new int[] { 0, 1, 2, 0, 0, 3, 0, 2, 0, 2, 3, 2, 2, 1, 1, 3, 1, 1 });
+
+                    JungleClear = NuJungleClear;
+                    Combo = NuCombo;
+                    Console.WriteLine("Nunu loaded");
+                    break;
+                    default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
-                //nidale w buff?(优先）)nunu R check | sej，结束skr，amumu？ graves！
+                //nidale w buff?(优先）) | sej，结束skr，amumu？ graves！
             }
+        }
+
+        private bool NuCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            /*
+            if (Q.IsReady() && targetmob != null && Hero.Distance(targetmob) < 700 || Hero.HealthPercent > 97)
+            {
+                Q.Cast();
+            }
+            */
+            if (W.IsReady() && !Hero.HasBuff("AbsoluteZero"))
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && !Hero.HasBuff("AbsoluteZero") && E.CanCast(targetHero))
+            {
+                E.CastOnUnit(targetHero);
+            }
+            if (R.IsReady() && !Hero.HasBuff("AbsoluteZero") && targetHero.IsValidTarget(125))
+            {
+                R.Cast();
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
+        }
+
+        private bool NuJungleClear()
+        {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (Q.IsReady() && Hero.Distance(targetMob) < Q.Range &&
+                (Helpers.getMobs(Hero.Position, Q.Range).Count >= 1 || targetMob.MaxHealth > 125))
+            {
+                Q.Cast(targetMob);
+            }
+            if (W.IsReady())
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && E.CanCast(targetMob) && (Hero.ManaPercent > 60 || targetMob.MaxHealth > 700))
+            {
+                E.CastOnUnit(targetMob);
+            }
+            ItemHandler.UseItemsJungle();
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
         }
 
         private bool BroCombo()

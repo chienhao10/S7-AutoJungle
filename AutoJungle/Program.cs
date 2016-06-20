@@ -133,6 +133,17 @@ namespace AutoJungle
                         return;
                     }
                     break;
+
+                case "Nunu":
+                    var rActive = player.HasBuff("AbsoluteZero");
+                    if (_GameInfo.GameState == State.FightIng)
+                    {
+                        if (player.Spellbook.IsChanneling && (target.IsValidTarget(650)))
+                        {
+                            return;
+                        }
+                    }
+                    break;
             }
         }
 
@@ -1400,6 +1411,8 @@ namespace AutoJungle
                 new MenuItem("HealtToBack", resourceM.GetString("HealtToBack")).SetValue(new Slider(35, 0, 100)));
             menuJ.AddItem(
                 new MenuItem("HealthToPotion", resourceM.GetString("HealthToPotion")).SetValue(new Slider(55, 0, 100)));
+            menuJ.AddItem(
+                new MenuItem("UseHeal", resourceM.GetString("UseHeal"))).SetValue(true);
             menuJ.AddItem(new MenuItem("UseTrinket", resourceM.GetString("UseTrinket"))).SetValue(true);
             menuJ.AddItem(new MenuItem("EnemyJungle", resourceM.GetString("EnemyJungle"))).SetValue(true);
             menu.AddSubMenu(menuJ);

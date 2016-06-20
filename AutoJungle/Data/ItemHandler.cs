@@ -44,6 +44,9 @@ namespace AutoJungle.Data
                 case BuildType.Bro:
                     SetlistBro();
                     break;
+                case BuildType.Nu:
+                    SetlistNu();
+                    break;
             }
         }
 
@@ -249,9 +252,9 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
             ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
             ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
-            ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
+            ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 1050));
             ItemList.Add(new BuyingOrder(7, (int) ItemId.Recurve_Bow, "弓", 700));
-            ItemList.Add(new BuyingOrder(8, 1416, "Bloodrazor", 625));
+            ItemList.Add(new BuyingOrder(8, 1416, "Bloodrazor", 1100));
             ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
             ItemList.Add(new BuyingOrder(10, 3117, "BoM", 600));
             ItemList.Add(new BuyingOrder(11, (int) ItemId.Tiamat_Melee_Only, "Tiamat", 1250));
@@ -265,6 +268,28 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(19, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
             ItemList.Add(new BuyingOrder(20, 3742, "Dead Mans Plate", 2600));
             ItemList.Add(new BuyingOrder(21, 2410, "Elixir of Wrath", 500));
+        }
+
+        private void SetlistNu()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
+            ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 1000));
+            ItemList.Add(new BuyingOrder(9, 3158, "Ionian Boots of Lucidity", 600));
+            ItemList.Add(new BuyingOrder(10, 3024, "Glacial Shroud", 1000));
+            ItemList.Add(new BuyingOrder(11, 3110, "Frozen Heart", 2000));
+            ItemList.Add(new BuyingOrder(12, 1052, "宝典", 435));
+            ItemList.Add(new BuyingOrder(13, 3285, "Ludens Echo", 2765));
+            ItemList.Add(new BuyingOrder(14, 1026, "Blasting Wand", 850));
+            ItemList.Add(new BuyingOrder(15, 3135, "Void Staf", 1800));
+            ItemList.Add(new BuyingOrder(16, 1058, "Needlessly Large Rod", 1250));
+            ItemList.Add(new BuyingOrder(17, 3089, "Rabadons Deathcap", 2500));
+            ItemList.Add(new BuyingOrder(18, 2139, "Elixir of Sorcery", 500));
         }
 
         public static void UseItemsJungle()
@@ -358,6 +383,7 @@ namespace AutoJungle.Data
         VB,
         Manwang,
         YI,
-        Bro
+        Bro,
+        Nu
     }
 }
