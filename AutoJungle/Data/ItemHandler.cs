@@ -254,20 +254,19 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
             ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 1050));
             ItemList.Add(new BuyingOrder(7, (int) ItemId.Recurve_Bow, "弓", 700));
-            ItemList.Add(new BuyingOrder(8, 1416, "Bloodrazor", 1100));
-            ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
+            ItemList.Add(new BuyingOrder(8, 1416, "Bloodrazor", 1600));
+            ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Speed, "Boots of Speed", 1500));
             ItemList.Add(new BuyingOrder(10, 3117, "BoM", 600));
             ItemList.Add(new BuyingOrder(11, (int) ItemId.Tiamat_Melee_Only, "Tiamat", 1250));
-            ItemList.Add(new BuyingOrder(12, (int) ItemId.Vampiric_Scepter, "Vampiric_Screpter", 900));
-            ItemList.Add(new BuyingOrder(13, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 1450));
-            ItemList.Add(new BuyingOrder(14, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
-            ItemList.Add(new BuyingOrder(15, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
-            ItemList.Add(new BuyingOrder(16, 1037, "十字", 875));
-            ItemList.Add(new BuyingOrder(17, 3133, "warhamm", 1100));
-            ItemList.Add(new BuyingOrder(18, 3812, "dance", 1525));
-            ItemList.Add(new BuyingOrder(19, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
-            ItemList.Add(new BuyingOrder(20, 3742, "Dead Mans Plate", 2600));
-            ItemList.Add(new BuyingOrder(21, 2410, "Elixir of Wrath", 500));
+            ItemList.Add(new BuyingOrder(12, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 2350));
+            ItemList.Add(new BuyingOrder(13, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
+            ItemList.Add(new BuyingOrder(14, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
+            ItemList.Add(new BuyingOrder(15, 1037, "十字", 875));
+            ItemList.Add(new BuyingOrder(16, 3133, "warhamm", 1100));
+            ItemList.Add(new BuyingOrder(17, 3812, "dance", 1525));
+            ItemList.Add(new BuyingOrder(18, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
+            ItemList.Add(new BuyingOrder(19, 3742, "Dead Mans Plate", 2600));
+            ItemList.Add(new BuyingOrder(20, 2410, "Elixir of Wrath", 500));
         }
 
         private void SetlistNu()
@@ -279,7 +278,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
             ItemList.Add(new BuyingOrder(6, 3113, "Aether Wisp", 850));
             ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
-            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 1000));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 1600));
             ItemList.Add(new BuyingOrder(9, 3158, "Ionian Boots of Lucidity", 600));
             ItemList.Add(new BuyingOrder(10, 3024, "Glacial Shroud", 1000));
             ItemList.Add(new BuyingOrder(11, 3110, "Frozen Heart", 2000));
