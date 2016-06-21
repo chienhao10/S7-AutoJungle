@@ -86,7 +86,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
             ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
             ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
-            ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 1350));
+            ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 1625));
             ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "鞋", 475));
             ItemList.Add(new BuyingOrder(9, 3111, "MT", 1100));
             ItemList.Add(new BuyingOrder(10, 1026, "棒", 850));
