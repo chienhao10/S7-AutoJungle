@@ -220,10 +220,10 @@
     <value>你必須重新載入腳本 (F5)!</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>語言</value>
+    <value>Language|語言</value>
   </data>
   <data name="lsetting" xml:space="preserve">
-    <value>語言設置</value>
+    <value>Language|語言設置</value>
   </data>
   <data name="sssettings" xml:space="preserve">
     <value>召喚師技能</value>

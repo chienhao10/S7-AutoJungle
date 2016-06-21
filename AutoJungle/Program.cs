@@ -1500,7 +1500,7 @@ namespace AutoJungle
                     "AutoJungleInfo2",
                     resourceM.GetString("AutoJungleInfo2") +
                     Assembly.GetExecutingAssembly().GetName().Version.ToString().Replace(",", ".")).SetFontStyle(
-                        FontStyle.Bold, SharpDX.Color.Green));
+                        FontStyle.Bold, SharpDX.Color.Red));
             /*menu.AddItem(
                 new MenuItem("AutoJungleInfo3", resourceM.GetString("AutoJungleInfo3")).SetFontStyle(
                     FontStyle.Bold, SharpDX.Color.Purple));*/
