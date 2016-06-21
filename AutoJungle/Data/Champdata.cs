@@ -295,15 +295,16 @@ namespace AutoJungle
             {
                 return false;
             }
-            if (R.IsReady() && targetMob.IsValidTarget(700))
+            if (R.IsReady() && Hero.Distance(targetMob) < R.Range && Hero.ManaPercent > 30 &&
+                (Helpers.getMobs(Hero.Position, R.Range).Count >= 2 || targetMob.MaxHealth > 700))
             {
                 R.Cast();
             }
-            if (W.IsReady())
+            if (W.IsReady() && Hero.Distance(targetMob) < 400 && Hero.ManaPercent > 30 || Hero.HealthPercent < 50)
             {
                 W.Cast();
             }
-            if (E.IsReady())
+            if (E.IsReady() && Hero.Distance(targetMob) < 130 && Hero.ManaPercent > 60)
             {
                 E.Cast();
             }
