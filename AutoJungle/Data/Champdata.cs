@@ -228,11 +228,92 @@ namespace AutoJungle
                     Combo = NuCombo;
                     Console.WriteLine("Nunu loaded");
                     break;
+
+                    case "Udyr":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.UD;
+
+                    Q = new Spell(SpellSlot.Q);
+                    W = new Spell(SpellSlot.W);
+                    E = new Spell(SpellSlot.E);
+                    R = new Spell(SpellSlot.R, 250);
+
+                    Autolvl = new AutoLeveler(new int[] { 3, 1, 2, 3, 3, 0, 3, 1, 3, 1, 1, 1, 2, 2, 2, 2, 0, 0 });
+
+                    JungleClear = UDJungleClear;
+                    Combo = UDCombo;
+                    Console.WriteLine("Udyr loaded");
+                    break;
                     default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
                 //nidale w buff?(优先）) | sej，结束skr，amumu？ graves！
             }
+        }
+
+        private bool UDCombo()
+        {
+            var targetHero = Program._GameInfo.Target;
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+            if (Program.menu.Item("ComboSmite").GetValue<Boolean>())
+            {
+                Jungle.CastSmiteHero((Obj_AI_Hero) targetHero);
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            if (E.IsReady() && targetHero.IsValidTarget(700))
+            {
+                E.Cast();
+            }
+            if (R.IsReady() && targetHero.IsValidTarget(125))
+            {
+                R.Cast();
+            }
+            if (W.IsReady() && targetHero.IsValidTarget(125))
+            {
+                W.Cast();
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            return false;
+        }
+
+        private bool UDJungleClear()
+        {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (R.IsReady() && targetMob.IsValidTarget(700))
+            {
+                R.Cast();
+            }
+            if (W.IsReady() && targetMob.IsValidTarget(125))
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && targetMob.IsValidTarget(125))
+            {
+                E.Cast();
+            }
+            ItemHandler.UseItemsJungle();
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
         }
 
         private bool NuCombo()

@@ -47,6 +47,9 @@ namespace AutoJungle.Data
                 case BuildType.Nu:
                     SetlistNu();
                     break;
+                case BuildType.UD:
+                    SetlistUD();
+                    break;
             }
         }
 
@@ -73,6 +76,28 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(19, 3086, "叉子", 1300));
             ItemList.Add(new BuyingOrder(20, 3087, "电", 1000));
             ItemList.Add(new BuyingOrder(21, 2140, "嗑药", 500));
+        }
+
+        private void SetlistUD()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Sabre", 700));
+            ItemList.Add(new BuyingOrder(6, 1042, "Dagger", 350));
+            ItemList.Add(new BuyingOrder(7, 1419, "Bloodrazor", 1350));
+            ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "鞋", 475));
+            ItemList.Add(new BuyingOrder(9, 3111, "MT", 1100));
+            ItemList.Add(new BuyingOrder(10, 1026, "棒", 850));
+            ItemList.Add(new BuyingOrder(11, 3124, "怒", 1750));
+            ItemList.Add(new BuyingOrder(12, 1031, "Chain Vest", 800));
+            ItemList.Add(new BuyingOrder(13, 3742, "Dead Man's Plate", 1800));
+            ItemList.Add(new BuyingOrder(14, 3044, "Phage", 1250));;
+            ItemList.Add(new BuyingOrder(15, 3078, "Trinity Force", 2483));
+            ItemList.Add(new BuyingOrder(16, 3211, "Spectres Cow", 1200));
+            ItemList.Add(new BuyingOrder(17, 3065, "Spirit Visage", 1600));
+            ItemList.Add(new BuyingOrder(18, 2138, "嗑药", 500));
         }
 
         private void SetListASMANA()
@@ -383,6 +408,7 @@ namespace AutoJungle.Data
         Manwang,
         YI,
         Bro,
-        Nu
+        Nu,
+        UD
     }
 }
