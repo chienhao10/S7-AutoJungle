@@ -216,6 +216,9 @@
   <data name="supportedOlaf" xml:space="preserve">
     <value>Olaf</value>
   </data>
+  <data name="supportedUdyr" xml:space="preserve">
+    <value>Udyr</value>
+  </data>
   <data name="UseTrinket" xml:space="preserve">
     <value>Use Trinket</value>
   </data>

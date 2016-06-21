@@ -270,11 +270,11 @@ namespace AutoJungle
             {
                 E.Cast();
             }
-            if (R.IsReady() && targetHero.IsValidTarget(125))
+            if (R.IsReady())
             {
                 R.Cast();
             }
-            if (W.IsReady() && targetHero.IsValidTarget(125))
+            if (W.IsReady())
             {
                 W.Cast();
             }
@@ -299,11 +299,11 @@ namespace AutoJungle
             {
                 R.Cast();
             }
-            if (W.IsReady() && targetMob.IsValidTarget(125))
+            if (W.IsReady())
             {
                 W.Cast();
             }
-            if (E.IsReady() && targetMob.IsValidTarget(125))
+            if (E.IsReady())
             {
                 E.Cast();
             }

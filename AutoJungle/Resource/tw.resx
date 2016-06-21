@@ -201,6 +201,9 @@
   <data name="supportedOlaf" xml:space="preserve">
     <value>歐拉夫</value>
   </data>
+  <data name="supportedUdyr" xml:space="preserve">
+    <value>烏迪爾</value>
+  </data>
   <data name="UseTrinket" xml:space="preserve">
     <value>使用飾品</value>
   </data>
