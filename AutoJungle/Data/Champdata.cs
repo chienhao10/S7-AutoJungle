@@ -251,6 +251,49 @@ namespace AutoJungle
             }
         }
 
+         public static void UseSpellsCombo()
+         {
+             var target = Program._GameInfo.Target;
+             var igniteDmg = Program.player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+             if (target != null && Program.menu.Item("UseIgniteG").GetValue<Boolean>() &&
+                 target.Distance(Program.player) < 600 && target.Health < igniteDmg - 15)
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Ignite, target);
+             }
+             var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
+             var healSlider = Program.menu.Item("UseHealG").GetValue<Slider>().Value;
+             if (healSlider >= 0 &&
+                 ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Heal);
+             }
+
+             var barrierSlider = Program.menu.Item("UseBarrierG").GetValue<Slider>().Value;
+             if (barrierSlider >= 0 &&
+                 ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Barrier);
+             }
+         }
+
+         public static void UseSpellsDef()
+         {
+             var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
+             var healSlider = Program.menu.Item("UseHealJ").GetValue<Slider>().Value;
+             if (healSlider >= 0 &&
+                 ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Heal);
+             }
+
+             var barrierSlider = Program.menu.Item("UseBarrierJ").GetValue<Slider>().Value;
+             if (barrierSlider >= 0 &&
+                 ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+             {
+                 GameInfo.CastSpell(Program._GameInfo.Barrier);
+             }
+         }
+
         private bool UDCombo()
         {
             var targetHero = Program._GameInfo.Target;
@@ -1130,7 +1173,8 @@ namespace AutoJungle
             {
                 Q.CastOnUnit(targetHero);
             }
-            if (W.IsReady() && Hero.HealthPercent < 25 || Program._GameInfo.DamageTaken >= Hero.Health / 3)
+            if ((Hero.Spellbook.IsChanneling &&
+                targetHero.Health > Program.player.GetAutoAttackDamage(targetHero, true) * 2) || targetHero == null)
             {
                 W.Cast();
             }

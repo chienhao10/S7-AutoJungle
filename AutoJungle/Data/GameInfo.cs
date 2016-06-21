@@ -36,6 +36,7 @@ namespace AutoJungle
         public Vector3 ClosestWardPos = Vector3.Zero;
         public const int ChampionRange = 1300;
         public bool GroupWithoutTarget;
+        public SpellSlot Ignite, Barrier, Heal;
 
         public GameInfo()
         {
@@ -64,6 +65,10 @@ namespace AutoJungle
             {
                 CurrentMonster = 1;
             }
+            Ignite = Program.player.GetSpellSlot("summonerdot");
+            Barrier = Program.player.GetSpellSlot("summonerbarrier");
+            Heal = Program.player.GetSpellSlot("summonerheal");
+
             Console.WriteLine("AutoJungle Loaded");
         }
 
@@ -74,7 +79,7 @@ namespace AutoJungle
 
         public bool CanBuyItem()
         {
-            if (GameState != State.Positioning ||
+        if (GameState != State.Positioning ||
             (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || ObjectManager.Player.HasBuff("ElixirOfSorcery")))
             {
                 return false;
@@ -120,6 +125,22 @@ namespace AutoJungle
             {
                 return EnemiesAround > AlliesAround + 1 ||
                        Champdata.Hero.HealthPercent < Program.menu.Item("HealtToBack").GetValue<Slider>().Value;
+            }
+        }
+
+        public static void CastSpell(SpellSlot spell, Obj_AI_Base target = null)
+        {
+            if (spell == SpellSlot.Unknown)
+            {
+                return;
+            }
+            if (target != null)
+            {
+                Program.player.Spellbook.CastSpell(spell, target);
+            }
+            else
+            {
+                Program.player.Spellbook.CastSpell(spell, Program.player);
             }
         }
 
