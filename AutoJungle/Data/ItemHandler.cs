@@ -90,7 +90,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "鞋", 475));
             ItemList.Add(new BuyingOrder(9, 3111, "MT", 1100));
             ItemList.Add(new BuyingOrder(10, 1026, "棒", 850));
-            ItemList.Add(new BuyingOrder(11, 3124, "怒", 1750));
+            ItemList.Add(new BuyingOrder(11, 3124, "怒", 2750));
             ItemList.Add(new BuyingOrder(12, 1031, "Chain Vest", 800));
             ItemList.Add(new BuyingOrder(13, 3742, "Dead Man's Plate", 1800));
             ItemList.Add(new BuyingOrder(14, 3044, "Phage", 1250));;
