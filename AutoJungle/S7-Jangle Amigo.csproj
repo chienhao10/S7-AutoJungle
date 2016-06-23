@@ -64,6 +64,7 @@
     <Compile Include="Data\Helpers.cs" />
     <Compile Include="Data\ItemHandler.cs" />
     <Compile Include="Data\Jungle.cs" />
+    <Compile Include="Data\OrbwalkingForBots.cs" />
     <Compile Include="Resource\cn.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -96,7 +97,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Resource\tw.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>tw.Designer.cs</LastGenOutput>
+      <LastGenOutput>tw1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

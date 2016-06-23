@@ -11,7 +11,6 @@ using System.Text;
 using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
-using System.Globalization;
 using System.Resources;
 
 namespace AutoJungle
@@ -31,6 +30,8 @@ namespace AutoJungle
         public static ItemHandler ItemHandler;
 
         public static Vector3 pos;
+
+        public static OrbwalkingForBots.Orbwalker orbwalker;
 
         public static ResourceManager resourceM;
         public static string culture;
@@ -124,7 +125,7 @@ namespace AutoJungle
                     }
                     if (_GameInfo.GameState == State.FightIng)
                     {
-                        if (Champdata.E.IsReady() &&
+                    	if (Champdata.E.IsReady() && Champdata.R.IsReady() &&
                             ((Champdata.Q.CanCast(target) && !eActive) || (target.IsValidTarget(350)) ||
                              ((_GameInfo.DamageCount >= 2 || _GameInfo.DamageTaken > player.Health * 0.2f) || !eActive)))
                         {
@@ -150,7 +151,7 @@ namespace AutoJungle
                     if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
                     {
                         var targetMob = _GameInfo.Target;
-                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(125) &&
+                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(230) &&
                             (player.ManaPercent > 25 || player.Level == 1) && !rActive2)
                         {
                             Champdata.R.Cast();
@@ -329,6 +330,15 @@ namespace AutoJungle
 
         private static void CastSpells()
         {
+        	if (_GameInfo.GameState == State.LaneClear || _GameInfo.GameState == State.Objective ||
+        		_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.Retreat)
+        	{
+        		Champdata.UseSpellsDef();
+        	}
+        	if (_GameInfo.Target == null)
+        	{
+        		return;
+        	}
             switch (_GameInfo.GameState)
             {
                 case State.FightIng:
@@ -340,12 +350,10 @@ namespace AutoJungle
                 case State.Jungling:
                     _GameInfo.Champdata.JungleClear();
                     UsePotions();
-                    Champdata.UseSpellsDef();
                     break;
                 case State.LaneClear:
                     _GameInfo.Champdata.JungleClear();
                     UsePotions();
-                    Champdata.UseSpellsDef();
                     break;
                 case State.Objective:
                     if (_GameInfo.Target is Obj_AI_Hero)
@@ -356,10 +364,8 @@ namespace AutoJungle
                     {
                         _GameInfo.Champdata.JungleClear();
                     }
-                    Champdata.UseSpellsDef();
                     break;
                 case State.Retreat:
-                    Champdata.UseSpellsDef();
                     break;
                 default:
                     break;
@@ -426,7 +432,8 @@ namespace AutoJungle
                 return false;
             }
 
-            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || ObjectManager.Player.HasBuff("ElixirOfSorcery"))
+            if (ObjectManager.Player.HasBuff("ElixirOfWrath") || ObjectManager.Player.HasBuff("ElixirOfIron") || 
+            	ObjectManager.Player.HasBuff("ElixirOfSorcery"))
             {
                 return false;
             }
@@ -497,7 +504,7 @@ namespace AutoJungle
                     .FirstOrDefault(
                         t =>
                             t.IsEnemy && !t.IsDead && t.Distance(player) < 2000 &&
-                            Helpers.getAllyMobs(t.Position, 1250).Count(m => m.UnderTurret(true)) > 0);
+                            Helpers.getAllyMobs(t.Position, 1000).Count(m => m.UnderTurret(true)) > 0);
             switch (_GameInfo.GameState)
             {
                 case State.Objective:
@@ -558,7 +565,7 @@ namespace AutoJungle
                                 m =>
                                     (!m.UnderTurret(true) ||
                                      (enemyTurret != null &&
-                                      Helpers.getAllyMobs(enemyTurret.Position, 1250).Count(o => o.UnderTurret(true)) >
+                                      Helpers.getAllyMobs(enemyTurret.Position, 1000).Count(o => o.UnderTurret(true)) >
                                       0)))
                             .OrderByDescending(m => player.GetAutoAttackDamage(m, true) > m.Health)
                             .ThenBy(m => m.Distance(player))
@@ -622,7 +629,7 @@ namespace AutoJungle
                     }
                 }
             }
-            if ((Jungle.SmiteReady() || (player.Level >= 14 && player.HealthPercent > 80)) && player.Level >= 9 &&
+            if ((Jungle.SmiteReady() || (player.Level >= 11 && player.HealthPercent > 80)) && player.Level >= 9 &&
                 player.Distance(Camps.Dragon.Position) < GameInfo.ChampionRange)
             {
                 var drake = Helpers.GetNearest(player.Position, GameInfo.ChampionRange);
@@ -789,13 +796,6 @@ namespace AutoJungle
 
         private static bool CheckLaneClear(Vector3 pos)
         {
-            if (Debug)
-            {
-                Console.WriteLine(
-                    Helpers.getMobs(pos, GameInfo.ChampionRange).Count +
-                    _GameInfo.EnemyStructures.Count(p => p.Distance(pos) < GameInfo.ChampionRange));
-                Console.WriteLine(!_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600));
-            }
             return (Helpers.AlliesThere(pos) == 0 || Helpers.AlliesThere(pos) >= 2 ||
                     player.Distance(_GameInfo.SpawnPoint) < 6000 || player.Distance(_GameInfo.SpawnPointEnemy) < 6000 ||
                     player.Level >= 10) && pos.CountEnemiesInRange(GameInfo.ChampionRange) == 0 &&
@@ -803,7 +803,7 @@ namespace AutoJungle
                    _GameInfo.EnemyStructures.Count(
                        p =>
                            p.Distance(pos) < GameInfo.ChampionRange &&
-                           Helpers.getAllyMobs(p, 1250).Count(m => m.UnderTurret(true)) > 0) > 0 &&
+                           Helpers.getAllyMobs(p, 1000).Count(m => m.UnderTurret(true)) > 0) > 0 &&
                    !_GameInfo.MonsterList.Any(m => m.Position.Distance(pos) < 600) && _GameInfo.SmiteableMob == null &&
                    _GameInfo.GameState != State.Retreat;
         }
@@ -1349,6 +1349,7 @@ namespace AutoJungle
         {
             player = ObjectManager.Player;
             _GameInfo = new GameInfo();
+            orbwalker = new OrbwalkingForBots.Orbwalker();
             SetCulture();
             if (Game.MapId != GameMapId.SummonersRift)
             {
@@ -1364,13 +1365,14 @@ namespace AutoJungle
             Jungle.setSmiteSlot();
             if (Jungle.smiteSlot == SpellSlot.Unknown)
             {
-                Console.WriteLine("Items: ");
-                foreach (var i in player.InventoryItems)
-                {
-                    Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
-                }
                 Game.PrintChat(resourceM.GetString("NoSmite"));
                 return;
+            }
+
+            Console.WriteLine("Items: ");
+            foreach (var i in player.InventoryItems)
+            {
+                Console.WriteLine("\t Name: {0}, ID: {1}({2})", i.IData.TranslatedDisplayName, i.Id, (int) i.Id);
             }
 
             ItemHandler = new ItemHandler(_GameInfo.Champdata.Type);
@@ -1498,6 +1500,7 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedOlaf", resourceM.GetString("supportedOlaf")));
             menuChamps.AddItem(new MenuItem("supportedNunu", resourceM.GetString("supportedNunu")));            
             menuChamps.AddItem(new MenuItem("supportedUdyr", resourceM.GetString("supportedUdyr")));
+            menuChamps.AddItem(new MenuItem("supportedKogMaw", resourceM.GetString("supportedKogMaw")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
@@ -1507,7 +1510,7 @@ namespace AutoJungle
                 new MenuItem("Language", resourceM.GetString("Language")).SetValue(new StringList(languages, 0)));
             menuLang.AddItem(
                 new MenuItem("AutoJungleInfoReload", resourceM.GetString("AutoJungleInfoReload")).SetFontStyle(
-                    FontStyle.Bold, SharpDX.Color.Red));
+                    FontStyle.Bold, SharpDX.Color.Pink));
             menu.AddSubMenu(menuLang);
             menu.AddItem(
                 new MenuItem(

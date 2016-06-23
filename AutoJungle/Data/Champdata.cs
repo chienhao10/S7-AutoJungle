@@ -13,10 +13,7 @@ namespace AutoJungle
 
         public Func<bool> JungleClear;
         public Func<bool> Combo;
-        public static Spell R;
-        public static Spell Q;
-        public Spell W;
-        public static Spell E;
+        public static Spell Q, W, E, R;
         public AutoLeveler Autolvl;
 
         public Champdata()
@@ -260,55 +257,55 @@ namespace AutoJungle
                     Combo = KogCombo;
                     Console.WriteLine("KogMaw loaded");
                     break;
-                    default:
+                default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
                 //nidale w buff?(优先）) | sej，结束skr，amumu？ graves！
             }
         }
 
-         public static void UseSpellsCombo()
-         {
-             var target = Program._GameInfo.Target;
-             var igniteDmg = Program.player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
-             if (target != null && Program.menu.Item("UseIgniteG").GetValue<Boolean>() &&
-                 target.Distance(Program.player) < 600 && target.Health < igniteDmg - 15)
-             {
-                 GameInfo.CastSpell(Program._GameInfo.Ignite, target);
-             }
-             var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
-             var healSlider = Program.menu.Item("UseHealG").GetValue<Slider>().Value;
-             if (healSlider >= 0 &&
-                 ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
-             {
-                 GameInfo.CastSpell(Program._GameInfo.Heal);
-             }
+        public static void UseSpellsCombo()
+        {
+            var target = Program._GameInfo.Target;
+            var igniteDmg = Program.player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            if (target != null && Program.menu.Item("UseIgniteG").GetValue<Boolean>() &&
+                target.Distance(Program.player) < 600 && target.Health < igniteDmg - 15)
+            {
+                GameInfo.CastSpell(Program._GameInfo.Ignite, target);
+            }
+            var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
+            var healSlider = Program.menu.Item("UseHealG").GetValue<Slider>().Value;
+            if (healSlider >= 0 &&
+                ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+            {
+                GameInfo.CastSpell(Program._GameInfo.Heal);
+            }
 
-             var barrierSlider = Program.menu.Item("UseBarrierG").GetValue<Slider>().Value;
-             if (barrierSlider >= 0 &&
-                 ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
-             {
-                 GameInfo.CastSpell(Program._GameInfo.Barrier);
-             }
-         }
+            var barrierSlider = Program.menu.Item("UseBarrierG").GetValue<Slider>().Value;
+            if (barrierSlider >= 0 &&
+                ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+            {
+                GameInfo.CastSpell(Program._GameInfo.Barrier);
+            }
+        }
 
-         public static void UseSpellsDef()
-         {
-             var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
-             var healSlider = Program.menu.Item("UseHealJ").GetValue<Slider>().Value;
-             if (healSlider >= 0 &&
-                 ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
-             {
-                 GameInfo.CastSpell(Program._GameInfo.Heal);
-             }
+        public static void UseSpellsDef()
+        {
+            var goingToDie = Program.player.Health - Program._GameInfo.DamageTaken <= 0;
+            var healSlider = Program.menu.Item("UseHealJ").GetValue<Slider>().Value;
+            if (healSlider >= 0 &&
+                ((healSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+            {
+                GameInfo.CastSpell(Program._GameInfo.Heal);
+            }
 
-             var barrierSlider = Program.menu.Item("UseBarrierJ").GetValue<Slider>().Value;
-             if (barrierSlider >= 0 &&
-                 ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
-             {
-                 GameInfo.CastSpell(Program._GameInfo.Barrier);
-             }
-         }
+            var barrierSlider = Program.menu.Item("UseBarrierJ").GetValue<Slider>().Value;
+            if (barrierSlider >= 0 &&
+                ((barrierSlider > Program.player.HealthPercent && Program._GameInfo.DamageTaken > 0) || goingToDie))
+            {
+                GameInfo.CastSpell(Program._GameInfo.Barrier);
+            }
+        }
 
          private bool KogCombo()
          {
@@ -342,7 +339,7 @@ namespace AutoJungle
             {
                 R.CastIfHitchanceEquals(targetHero, HitChance.High);
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
          }
 
@@ -415,7 +412,7 @@ namespace AutoJungle
             {
                 W.Cast();
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -432,7 +429,7 @@ namespace AutoJungle
             {
                 return false;
             }
-            if (R.IsReady() && !Hero.HasBuff("UdyrPhoenixStance"))
+            if (R.IsReady() && Hero.Distance(targetMob) < 230 && !Hero.HasBuff("UdyrPhoenixStance"))
             {
                 R.Cast();
             }
@@ -487,7 +484,7 @@ namespace AutoJungle
             {
                 R.Cast();
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -554,7 +551,7 @@ namespace AutoJungle
             {
                 W.Cast();
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -579,9 +576,9 @@ namespace AutoJungle
             if (E.IsReady() && Hero.Distance(targetMob) < 300 &&
                 (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
                 if (Hero.HealthPercent > 45)
-            {
-                E.Cast(targetMob);
-            }
+                {
+                    E.Cast(targetMob);
+                }
             if (W.IsReady() && Hero.Distance(targetMob) < 300 &&
                 (Program._GameInfo.SmiteableMob != null || Program._GameInfo.MinionsAround > 3 || structure != null))
             {
@@ -630,7 +627,7 @@ namespace AutoJungle
             {
                 R.Cast();
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -696,7 +693,7 @@ namespace AutoJungle
             {
                 W.CastOnUnit(targetHero);
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -766,7 +763,7 @@ namespace AutoJungle
             {
                 E.CastOnUnit(targetHero);
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -826,7 +823,7 @@ namespace AutoJungle
             {
                 Q.CastOnUnit(targetHero);
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -895,7 +892,7 @@ namespace AutoJungle
             {
                 E.CastOnUnit(targetHero);
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -992,7 +989,7 @@ namespace AutoJungle
             }
             else if (targetHero != null)
             {
-                Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+                OrbwalkingForBots.Orbwalk(targetHero);
             }
             return false;
         }
@@ -1069,7 +1066,7 @@ namespace AutoJungle
                 R.CastIfHitchanceEquals(targetHero, HitChance.VeryHigh);
             }
 
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -1149,7 +1146,7 @@ namespace AutoJungle
                 E.Cast();
             }
             ItemHandler.UseItemsCombo(targetHero, !R.IsReady());
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -1268,12 +1265,12 @@ namespace AutoJungle
                 Q.CastOnUnit(targetHero);
             }
             if ((Hero.Spellbook.IsChanneling &&
-                targetHero.Health > Program.player.GetAutoAttackDamage(targetHero, true) * 2) || targetHero == null)
+                 targetHero.Health > Program.player.GetAutoAttackDamage(targetHero, true) * 2) || targetHero == null)
             {
                 W.Cast();
             }
             ItemHandler.UseItemsCombo(targetHero, !Q.IsReady());
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
@@ -1317,7 +1314,7 @@ namespace AutoJungle
             {
                 E.CastOnUnit(targetHero);
             }
-            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetHero);
+            OrbwalkingForBots.Orbwalk(targetHero);
             return false;
         }
 
