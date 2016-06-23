@@ -432,6 +432,10 @@ namespace AutoJungle
             {
                 return false;
             }
+            if (R.IsReady() && !Hero.HasBuff("UdyrPhoenixStance"))
+            {
+                R.Cast();
+            }
             if (W.IsReady() && Hero.Distance(targetMob) < 400 && Hero.ManaPercent > 30 || Hero.HealthPercent < 75)
             {
                 W.Cast();

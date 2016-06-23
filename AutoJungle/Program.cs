@@ -146,7 +146,7 @@ namespace AutoJungle
                     break;
 
                 case "Udyr":
-                    var rActive2 = player.HasBuff("UdyrPhoenixStance");
+                    var rActive2 = !player.HasBuff("UdyrPhoenixStance");
                     if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
                     {
                         var targetMob = _GameInfo.Target;
