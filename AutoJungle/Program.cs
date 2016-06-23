@@ -144,6 +144,20 @@ namespace AutoJungle
                         }
                     }
                     break;
+
+                case "Udyr":
+                    var rActive2 = player.HasBuff("UdyrPhoenixStance");
+                    if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
+                    {
+                        var targetMob = _GameInfo.Target;
+                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(125) &&
+                            (player.ManaPercent > 25 || player.Level == 1) && !rActive2)
+                        {
+                            Champdata.R.Cast();
+                        }
+                        return;
+                    }
+                    break;
             }
         }
 
@@ -626,7 +640,7 @@ namespace AutoJungle
         {
             Obj_AI_Hero gankTarget = null;
             if (player.Level >= menu.Item("GankLevel").GetValue<Slider>().Value &&
-                ((player.Mana > _GameInfo.Champdata.R.ManaCost && player.MaxMana > 100) || player.MaxMana <= 100))
+                ((player.Mana > Champdata.R.ManaCost && player.MaxMana > 100) || player.MaxMana <= 100))
             {
                 var heroes =
                     HeroManager.Enemies.Where(
