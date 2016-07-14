@@ -206,10 +206,7 @@
   </data>
   <data name="supportedUdyr" xml:space="preserve">
     <value>兽灵行者</value>
-  </data>
-  <data name="supportedKogMaw" xml:space="preserve">
-    <value>深渊巨口</value>
-  </data>  
+  </data> 
   <data name="UseTrinket" xml:space="preserve">
     <value>使用饰品</value>
   </data>
@@ -243,4 +240,10 @@
   <data name="UseIgniteOpt" xml:space="preserve">
     <value>切换目标如果点燃可击杀</value>
   </data>
-  </root>
+  <data name="supportedKogMaw" xml:space="preserve">
+    <value>深渊巨口</value>
+  </data> 
+  <data name="WaitAtLvlTWO" xml:space="preserve">
+    <value>等级2时等待惩戒就绪</value>
+  </data>
+</root>

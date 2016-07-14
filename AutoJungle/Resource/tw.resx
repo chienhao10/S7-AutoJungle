@@ -243,4 +243,10 @@
   <data name="UseIgniteOpt" xml:space="preserve">
     <value>切換目標如果點燃可擊殺</value>
   </data>
-  </root>
+  <data name="supportedKogMaw" xml:space="preserve">
+    <value>寇格魔</value>
+  </data>  
+  <data name="WaitAtLvlTWO" xml:space="preserve">
+    <value>等級2時等待重擊就緒</value>
+  </data>
+</root>
