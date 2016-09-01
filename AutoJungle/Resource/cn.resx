@@ -244,7 +244,7 @@
     <value>深渊巨口</value>
   </data> 
   <data name="WaitAtLvlTWO" xml:space="preserve">
-    <value>等级2时等待惩戒就绪</value>
+    <value>等级2时HP低于55%等待惩戒就绪</value>
   </data>
   <data name="supportedKayle" xml:space="preserve">
   <value>天使凯尔</value>

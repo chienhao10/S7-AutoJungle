@@ -244,7 +244,7 @@
     <value>KogMaw</value>
   </data>
   <data name="WaitAtLvlTWO" xml:space="preserve">
-    <value>Wait for smite at level 2</value>
+    <value>Wait for smite at level 2(HP 55% Lower)</value>
   </data>
   <data name="supportedKayle" xml:space="preserve">
   <value>Kayle</value>

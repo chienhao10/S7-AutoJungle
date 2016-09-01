@@ -247,7 +247,7 @@
     <value>寇格魔</value>
   </data>  
   <data name="WaitAtLvlTWO" xml:space="preserve">
-    <value>等級2時等待重擊就緒</value>
+    <value>等級2時HP低于55%等待重擊就緒</value>
   </data>
   <data name="supportedKayle" xml:space="preserve">
   <value>天使凱爾</value>
