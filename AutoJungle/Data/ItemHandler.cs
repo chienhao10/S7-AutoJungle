@@ -54,7 +54,8 @@ namespace AutoJungle.Data
                     SetlistKOG();
                     break;    
                 case BuildType.Kayle:
-                	SetlistKayle();                
+                	SetlistKayle();
+                    break;
             }
         }
 
