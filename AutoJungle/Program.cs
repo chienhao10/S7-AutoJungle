@@ -160,18 +160,19 @@ namespace AutoJungle
                         return;
                     }
                     break;
-
+/*
                 case "Nunu":
                     var rActive = player.HasBuff("AbsoluteZero");
                     if (_GameInfo.GameState == State.FightIng)
                     {
-                        if (player.Spellbook.IsChanneling && (target.IsValidTarget(650)))
+                        var targetHero = _GameInfo.Target;
+                        if (player.Spellbook.IsChanneling && (targetHero.IsValidTarget(650)))
                         {
                             return;
                         }
                     }
                     break;
-
+*/
                 case "Udyr":
                     var rActive2 = player.HasBuff("UdyrPhoenixStance");
                     if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
