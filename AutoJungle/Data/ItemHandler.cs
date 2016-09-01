@@ -65,7 +65,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
             ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
             ItemList.Add(new BuyingOrder(4, 1041, "Hunter's Machete", 350));
-            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(5, 3715, "Skirmisher's Blade", 700));
             ItemList.Add(new BuyingOrder(6, 3101, "Stinger", 1300));
             ItemList.Add(new BuyingOrder(7, 3006, "BKG", 1100));
             ItemList.Add(new BuyingOrder(8, 3115, "NsT", 1900));
