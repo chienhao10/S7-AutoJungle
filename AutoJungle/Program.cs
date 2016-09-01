@@ -58,12 +58,15 @@ namespace AutoJungle
                 return;
             }
 
-            if (menu.Item("WaitAtLvlTWO", true).GetValue<bool>() && Jungle.smite != null && player.HealthPercent < 45 &&
-                Jungle.smite.Instance.Ammo == 0 && player.Level == 2 && _GameInfo.GameState == State.Positioning &&
-                player.Distance(_GameInfo.MonsterList.First().Position) < 700)
+            if(player.HealthPercent < 45)
             {
+            if (menu.Item("WaitAtLvlTWO", true).GetValue<bool>() && Jungle.smite != null &&
+            Jungle.smite.Instance.Ammo == 0 && player.Level == 2 && _GameInfo.GameState == State.Positioning &&
+            player.Distance(_GameInfo.MonsterList.First().Position) < 700)
+                {
                 _GameInfo.afk = 0;
-                return;
+            return;
+                }
             }
             //Checking Afk
             if (CheckAfk())
