@@ -375,7 +375,7 @@ namespace AutoJungle
             ItemHandler.UseItemsJungle();
             if (Q.IsReady() && targetMob.IsValidTarget(650) || Hero.ManaPercent > 50)
             {
-                Q.Cast(targetHero);
+                Q.Cast(targetMob);
             }
             if (E.IsReady() && targetMob.IsValidTarget(525))
             {
