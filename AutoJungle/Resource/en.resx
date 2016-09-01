@@ -246,4 +246,7 @@
   <data name="WaitAtLvlTWO" xml:space="preserve">
     <value>Wait for smite at level 2</value>
   </data>
+  <data name="supportedKayle" xml:space="preserve">
+  <value>Kayle</value>
+  </data>
 </root>

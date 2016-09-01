@@ -246,4 +246,7 @@
   <data name="WaitAtLvlTWO" xml:space="preserve">
     <value>等级2时等待惩戒就绪</value>
   </data>
+  <data name="supportedKayle" xml:space="preserve">
+  <value>天使凯尔</value>
+  </data>
 </root>

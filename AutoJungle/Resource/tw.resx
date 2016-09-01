@@ -249,4 +249,7 @@
   <data name="WaitAtLvlTWO" xml:space="preserve">
     <value>等級2時等待重擊就緒</value>
   </data>
+  <data name="supportedKayle" xml:space="preserve">
+  <value>天使凱爾</value>
+  </data>
 </root>

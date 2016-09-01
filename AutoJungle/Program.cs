@@ -1616,6 +1616,7 @@ namespace AutoJungle
             menuChamps.AddItem(new MenuItem("supportedNunu", resourceM.GetString("supportedNunu")));
             menuChamps.AddItem(new MenuItem("supportedUdyr", resourceM.GetString("supportedUdyr")));
             menuChamps.AddItem(new MenuItem("supportedKogMaw", resourceM.GetString("supportedKogMaw")));
+            menuChamps.AddItem(new MenuItem("supportedKayle", resourceM.GetString("supportedKayle")));
 
             //menuChamps.AddItem(new MenuItem("supportedSkarner", "Skarner"));
             menu.AddSubMenu(menuChamps);
