@@ -137,6 +137,30 @@ namespace AutoJungle
                     }
                     break;
 
+                case "Kayle":
+                    var rActive3 = player.HasBuff("JudicatorIntervention");
+                    if (_GameInfo.GameState == State.FightIng)
+                    {
+                        var targetHero = _GameInfo.Target;
+                        if (Champdata.R.IsReady() && targetHero.IsValidTarget(525) &&
+                            player.HealthPercent <= 25 && !rActive3)
+                        {
+                            Champdata.R.Cast();
+                        }
+                        return;
+                    }
+                    if (_GameInfo.GameState == State.Jungling || _GameInfo.GameState == State.LaneClear)
+                    {
+                        var targetMob = _GameInfo.Target;
+                        if (Champdata.R.IsReady() && targetMob.IsValidTarget(525) &&
+                            player.HealthPercent <= 25 && !rActive3)
+                        {
+                            Champdata.R.Cast();
+                        }
+                        return;
+                    }
+                    break;
+
                 case "Nunu":
                     var rActive = player.HasBuff("AbsoluteZero");
                     if (_GameInfo.GameState == State.FightIng)

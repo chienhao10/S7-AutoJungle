@@ -351,10 +351,6 @@ namespace AutoJungle
             {
                 W.Cast();
             }
-            if (R.IsReady() && Hero.HealthPercent < 30 && targetHero.IsValidTarget(525))
-            {
-                R.Cast();
-            }
             OrbwalkingForBots.Orbwalk(targetHero);
             return false;
          }
@@ -373,9 +369,9 @@ namespace AutoJungle
                 return false;
             }
             ItemHandler.UseItemsJungle();
-            if (Q.IsReady() && targetMob.IsValidTarget(650) || Hero.ManaPercent > 50)
+            if (Q.IsReady() && Q.CanCast(targetMob) && (Hero.ManaPercent > 45 || targetMob.MaxHealth > 700))
             {
-                Q.Cast(targetMob);
+                Q.CastOnUnit(targetMob);
             }
             if (E.IsReady() && targetMob.IsValidTarget(525))
             {
@@ -384,10 +380,6 @@ namespace AutoJungle
             if (W.IsReady() && Hero.HealthPercent < 50)
             {
                 W.Cast();
-            }
-            if (R.IsReady() && Hero.HealthPercent < 15)
-            {
-                R.Cast();
             }
             if (Hero.IsWindingUp)
             {
