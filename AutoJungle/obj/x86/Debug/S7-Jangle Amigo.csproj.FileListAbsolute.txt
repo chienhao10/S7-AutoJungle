@@ -1,0 +1,4 @@
+C:\Users\Paully\Documents\GitHub\S7-AutoJungle\AutoJungle\obj\x86\Debug\AutoJungle.Resource.cn.resources
+C:\Users\Paully\Documents\GitHub\S7-AutoJungle\AutoJungle\obj\x86\Debug\AutoJungle.Resource.en.resources
+C:\Users\Paully\Documents\GitHub\S7-AutoJungle\AutoJungle\obj\x86\Debug\AutoJungle.Resource.tw.resources
+C:\Users\Paully\Documents\GitHub\S7-AutoJungle\AutoJungle\obj\x86\Debug\S7-Jangle Amigo.csproj.GenerateResource.Cache

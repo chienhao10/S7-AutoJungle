@@ -276,7 +276,7 @@ namespace AutoJungle
 
                 case "LeeSin":
                     Hero = ObjectManager.Player;
-                    Type = BuildType.LeeSin;
+                    Type = BuildType.Lee;
 
                     Q = new Spell(SpellSlot.Q, 650);
                     W = new Spell(SpellSlot.W, 900);
@@ -285,8 +285,8 @@ namespace AutoJungle
 
                     Autolvl = new AutoLeveler(new int[] { 0, 1, 2, 0, 0, 3, 0, 1, 0, 2, 3, 1, 2, 1, 2, 3, 1, 2 });
 
-                    JungleClear = LeesinJungleClear;
-                    Combo = KayleCombo;
+                    JungleClear = MasteryiJungleClear;
+                    Combo = MasteryiCombo;
                     Console.WriteLine("Lee Sin loaded");
                     break;
                 default:
@@ -1287,7 +1287,7 @@ namespace AutoJungle
             return false;
         }
 
-        private bool LeesinJungeClear()
+       /* private bool LeeJungleClear()
         {
             var targetMob = Program._GameInfo.Target;
             var structure = Helpers.CheckStructure();
@@ -1324,7 +1324,7 @@ namespace AutoJungle
             ItemHandler.UseItemsJungle();
             Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
             return false;
-        }
+        }*/
         private bool MasteryiJungleClear()
         {
             var targetMob = Program._GameInfo.Target;
