@@ -56,6 +56,9 @@ namespace AutoJungle.Data
                 case BuildType.Kayle:
                 	SetlistKayle();
                     break;
+                case BuildType.Lee:
+                    SetlistLee();
+                    break;
             }
         }
 
@@ -359,6 +362,28 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(18, 2139, "Elixir of Sorcery", 500));
         }
 
+        private void SetlistLee()
+        {
+            ItemList.Add(new BuyingOrder(1, 1041, "Hunter's Machete", 350));
+            ItemList.Add(new BuyingOrder(2, 2031, "Refillable Potion", 150));
+            ItemList.Add(new BuyingOrder(3, 3340, "Trinket", 0));
+            ItemList.Add(new BuyingOrder(4, 1039, "Hunter's Talisman", 350));
+            ItemList.Add(new BuyingOrder(5, 3706, "Stalker's Blade", 700));
+            ItemList.Add(new BuyingOrder(6, 3133, "Caulfield Warhammer", 1100));
+            ItemList.Add(new BuyingOrder(7, 1412, "Warrior", 525));
+            ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 1600));
+            ItemList.Add(new BuyingOrder(9, 3117, "Boots of Mobility", 600));
+            ItemList.Add(new BuyingOrder(10, 3133, "Caulfield Warhammer", 1100));
+            ItemList.Add(new BuyingOrder(11, 3071, "The Black Cleaver", 2000));
+            ItemList.Add(new BuyingOrder(12, 1011, "Giants Belt", 1000));
+            ItemList.Add(new BuyingOrder(13, 3742, "Deadsman Plate", 1800));
+            ItemList.Add(new BuyingOrder(14, 3211, "Spectre`s Cowl", 1200));
+            ItemList.Add(new BuyingOrder(15, 3102, "Banshee Veil", 1250));
+            ItemList.Add(new BuyingOrder(16, 1031, "Chain Vest", 800));
+            ItemList.Add(new BuyingOrder(17, 3026, "Guardian`s Angel", 1600));
+            ItemList.Add(new BuyingOrder(18, 2139, "Elixir of Sorcery", 500));
+        }
+
         public static void UseItemsJungle()
         {
             if (Items.HasItem((int) ItemId.Tiamat_Melee_Only) && Items.CanUseItem((int) ItemId.Tiamat_Melee_Only) &&
@@ -454,6 +479,7 @@ namespace AutoJungle.Data
         Nu,
         UD,
         Kayle,
-        KOG
+        KOG,
+        Lee
     }
 }

@@ -273,6 +273,22 @@ namespace AutoJungle
                     Combo = KayleCombo;
                     Console.WriteLine("Kayle loaded");
                     break;
+
+                case "LeeSin":
+                    Hero = ObjectManager.Player;
+                    Type = BuildType.LeeSin;
+
+                    Q = new Spell(SpellSlot.Q, 650);
+                    W = new Spell(SpellSlot.W, 900);
+                    E = new Spell(SpellSlot.E, 525);
+                    R = new Spell(SpellSlot.R, 900);
+
+                    Autolvl = new AutoLeveler(new int[] { 0, 1, 2, 0, 0, 3, 0, 1, 0, 2, 3, 1, 2, 1, 2, 3, 1, 2 });
+
+                    JungleClear = LeesinJungleClear;
+                    Combo = KayleCombo;
+                    Console.WriteLine("Lee Sin loaded");
+                    break;
                 default:
                     Console.WriteLine(ObjectManager.Player.ChampionName + " not supported");
                     break;
@@ -1271,6 +1287,44 @@ namespace AutoJungle
             return false;
         }
 
+        private bool LeesinJungeClear()
+        {
+            var targetMob = Program._GameInfo.Target;
+            var structure = Helpers.CheckStructure();
+            if (structure != null)
+            {
+                Hero.IssueOrder(GameObjectOrder.AttackUnit, structure);
+                return false;
+            }
+            if (targetMob == null)
+            {
+                return false;
+            }
+            if (Hero.Spellbook.IsChanneling)
+            {
+                return false;
+            }
+
+            if (Q.IsReady() && Hero.IsWindingUp)
+            {
+                Q.Cast();
+            }
+            if (E.IsReady() && Hero.IsWindingUp)
+            {
+                E.Cast();
+            }
+            if (W.IsReady() && Hero.IsWindingUp)
+            {
+                W.Cast();
+            }
+            if (Hero.IsWindingUp)
+            {
+                return false;
+            }
+            ItemHandler.UseItemsJungle();
+            Hero.IssueOrder(GameObjectOrder.AttackUnit, targetMob);
+            return false;
+        }
         private bool MasteryiJungleClear()
         {
             var targetMob = Program._GameInfo.Target;
