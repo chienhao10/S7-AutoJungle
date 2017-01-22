@@ -211,7 +211,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
             ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Swiftness, "Boots of Swoftness", 500));
             ItemList.Add(new BuyingOrder(10, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
-            ItemList.Add(new BuyingOrder(11, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
+            ItemList.Add(new BuyingOrder(11, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1800));
             ItemList.Add(new BuyingOrder(12, (int) ItemId.Recurve_Bow, "Recurve Bow", 1000));
             ItemList.Add(new BuyingOrder(13, (int) ItemId.Wits_End, "Wits End", 1800));
             ItemList.Add(new BuyingOrder(14, (int) ItemId.Tiamat_Melee_Only, "Tiamat", 1250));
@@ -233,7 +233,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(8, (int) ItemId.Boots_of_Speed, "Boots of Speed", 475));
             ItemList.Add(new BuyingOrder(9, (int) ItemId.Boots_of_Swiftness, "Boots of Swoftness", 500));
             ItemList.Add(new BuyingOrder(10, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
-            ItemList.Add(new BuyingOrder(11, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
+            ItemList.Add(new BuyingOrder(11, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1800));
             ItemList.Add(new BuyingOrder(12, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
             ItemList.Add(new BuyingOrder(13, (int) ItemId.Chain_Vest, "Chain Vest", 800));
             ItemList.Add(new BuyingOrder(14, 3742, "Dead Mans Plate", 1800));
@@ -265,7 +265,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(16, 3211, "Spectres Cow", 1200));
             ItemList.Add(new BuyingOrder(17, 3102, "Banshees Veil", 1250));
             ItemList.Add(new BuyingOrder(18, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
-            ItemList.Add(new BuyingOrder(19, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
+            ItemList.Add(new BuyingOrder(19, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1800));
             ItemList.Add(new BuyingOrder(20, 2140, "Elixir of Wrath", 500));
             //add heal spell useage and keep buy Elixir of Wrath after full item
         }
@@ -281,7 +281,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(7, 1402, "Runic Echoes", 1350));
             ItemList.Add(new BuyingOrder(8, 1001, "Boots of Speed", 400));
             ItemList.Add(new BuyingOrder(9, 3158, "Ionian Boots of Lucidity", 600));
-            ItemList.Add(new BuyingOrder(10, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
+            ItemList.Add(new BuyingOrder(10, 1026, "Blasting Wand", 850);
             ItemList.Add(new BuyingOrder(11, 3116, "Rylais Crystal Scepter", 2250));
             ItemList.Add(new BuyingOrder(12, 1052, "宝典", 435));
             ItemList.Add(new BuyingOrder(13, 3285, "Ludens Echo", 2765));
@@ -332,7 +332,7 @@ namespace AutoJungle.Data
             ItemList.Add(new BuyingOrder(11, (int) ItemId.Tiamat_Melee_Only, "Tiamat", 1250));
             ItemList.Add(new BuyingOrder(12, (int) ItemId.Ravenous_Hydra_Melee_Only, "Ravenous Hydra Melee Only", 2350));
             ItemList.Add(new BuyingOrder(13, (int) ItemId.Bilgewater_Cutlass, "Bilgewater Cutlass", 1650));
-            ItemList.Add(new BuyingOrder(14, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1750));
+            ItemList.Add(new BuyingOrder(14, (int) ItemId.Blade_of_the_Ruined_King, "BOTRK", 1800));
             ItemList.Add(new BuyingOrder(15, 3086, "zeal", 1300));
             ItemList.Add(new BuyingOrder(16, 3046, "PD", 1250));
             ItemList.Add(new BuyingOrder(17, (int) ItemId.Giants_Belt, "Giants Belt", 1000));
